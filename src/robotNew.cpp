@@ -107,6 +107,26 @@ void Robot::changeDirection(float radian)
     this->direction += radian;
 }
 
+void Robot::moveRobot()
+{
+    /** add code here **/
+}
+
+void Robot::updateState()
+{
+    /** add code here **/
+}
+
+void publishThrottle()
+{
+    /** add code here **/
+}
+
+void publishSteering()
+{
+    /** add code here **/
+}
+
 void Robot::callbackUpdateRobotLocation(const geometry_msgs::Point::ConstPtr& robot)
 {
     float radian = atan2(robot->y - this->getYLocation(),robot->x - this->getXLocation());

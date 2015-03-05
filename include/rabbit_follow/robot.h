@@ -41,6 +41,12 @@ class Robot
 
         /** modifier functions **/
         void changeDirection(float radian);
+        void moveRobot();
+        void updateState();
+
+        void publishThrottle();
+        void publishSteering();
+
         void callbackUpdateRobotLocation(const geometry_msgs::Point::ConstPtr& robot);
         void callbackUpdateCarrotLocation(const geometry_msgs::Point::ConstPtr& carrot);
 
