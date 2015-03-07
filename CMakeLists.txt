@@ -98,11 +98,11 @@ include_directories(include
 
 ## Declare a cpp library
  add_library(rabbit_follow
-   src/robotNew.cpp
+   src/robot.cpp
 )
 
 ## Declare a cpp executable
- add_executable(rabbit_follow_node src/robot.cpp)
+ add_executable(rabbit_follow_node src/robot_node.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes

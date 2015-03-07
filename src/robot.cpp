@@ -1,135 +1,142 @@
-///***********************************************
-//* Robot main file for rabbit follow algorithm  *
-//* Written for SWARATH Project                  *
-//* @author Nishant Sharma                       *
-//* @version 0.0                                 *
-//* @date 4, March, 2015                         *
-//***********************************************/
-//
-//#include <ros/ros.h>
-//#include <visualization_msgs/Marker.h>
-//#include <rabbit_follow/robot.h>
-//#include <cmath>
-//#include <vector>
-//
-//int currentD=0;
-//
-///** callback function in robotNew.cpp **/
-//
-//void initializeMarkers(visualization_msgs::Marker &robot)
-//{
-//    robot.header.frame_id  = "/rabbit_follow";
-//    robot.header.stamp     = ros::Time::now();
-//    robot.ns               = "rabbit_follow_robot";
-//    robot.id               = 0;
-//    robot.action           = visualization_msgs::Marker::ADD;
-//    robot.type             = visualization_msgs::Marker::SPHERE;
-//
-//    robot.scale.x=1.0;
-//    robot.scale.y=1.0;
-//    robot.scale.z=1.0;
-//
-//    robot.color.g = 1.0f;
-//    robot.color.a = 1.0;
-//}
-//
-//int main (int argc,char** argv)
-//{
-//    ros::init(argc,argv,"rabbit_follow_robot");
-//    ros::NodeHandle n;
-//
-//    ros::Publisher marker_pub = n.advertise<visualization_msgs::Marker>("rabbit_follow",10);
-//
-//    visualization_msgs::Marker robot;
-//
-//
-//    while (ros::ok())
-//    {
-//        ros::Spin();
-//    }
-//
-//}
+/************************************
+* Robot description implementation  *
+*    for rabbit follow algorithm    *
+* Written for SWARATH Project       *
+* @author Nishant Sharma            *
+* @version 0.0                      *
+* @date 4, March, 2015              *
+************************************/
 
+#include <rabbit_follow/robot.h>
 
-
-#include <ros/ros.h>
-#include <rabbit_follow/location.h>
-#include <visualization_msgs/Marker.h>
-#include <cmath>
-#include <vector>
-
-int currentD=0;
-bool moveCarrotFlag = true;
-
-rabbit_follow::location circle1;
-
-void callback(const rabbit_follow::location::constPtr &msg)
+/** constructors **/
+Robot::Robot()
 {
-	circle1.x = msg->x;
-    circle1.y = msg->y;
-    circle1.z = msg->z;
+    this->setXLocation(0);
+    this->setYLocation(0);
+    this->setDirection(0);
+    this->setState(followingCarrot);
+    this->setCarrotXLocation(0);
+    this->setCarrotYLocation(0);
 }
 
-visualization_msgs::Marker moveRobot(visualization_msgs::Marker robot)
+Robot::Robot(float x, float y, float radian, State state)
 {
-
-	float dist=pow(pow(robot.pose.position.x-circle1.x,2)+pow(robot.pose.position.y-circle1.y,2),0.5);
-    if(dist<1)
-    {
-       exit(1);
-    }
-    double theta = atan2(circle1.y-robot.pose.position.y,circle1.x - robot.pose.position.x);
-    robot.pose.position.x+= 0.8*cos(theta);
-    robot.pose.position.y+= 0.8*sin(theta);
-    return robot;
+    this->setXLocation(x);
+    this->setYLocation(y);
+    this->setDirection(radian);
+    this->setState(state);
+    this->setCarrotXLocation(0);
+    this->setCarrotYLocation(0);
 }
 
-int main (int argc,char** argv)
+/** destructor **/
+Robot::~Robot()
 {
-    ros::init(argc,argv,"robot");
-    ros::NodeHandle n;
-    ros::Subscriber sub = n.subscribe("carloc",10,callback);
-    ros::Publisher marker_pub = n.advertise<visualization_msgs::Marker>("path",10);
-    ros::Publisher loc_pub = n.advertise<rabbit_follow::location>("rabloc",10);
+    //dtor
+}
 
-    ros::Publisher carloc_pub = n.advertise<rabbit_follow::location>("carrabloc",10);
+/** get functions **/
 
-    visualization_msgs::Marker robot;
-    rabbit_follow::location robot1;
-    ros::Rate r(100);
+float Robot::getXLocation()
+{
+    return this->xLocation;
+}
 
-	robot.header.frame_id= "/my_path";
-    robot.header.stamp= ros::Time::now();
-    robot.ns="path";
-    robot.id=3;
-    robot.action= visualization_msgs::Marker::ADD;
-    robot.type= visualization_msgs::Marker::SPHERE;
+float Robot::getYLocation()
+{
+    return this->yLocation;
+}
 
-    robot.scale.x=1.0;
-    robot.scale.y=1.0;
-    robot.scale.z=1.0;
+State Robot::getState()
+{
+    return this->state;
+}
 
-    robot.color.g = 1.0f;
-    robot.color.a = 1.0;
+float Robot::getDirection()
+{
+    return this->direction;
+}
 
-    robot.pose.position.x = -15;
-    robot.pose.position.y = -18;
+float Robot::getCarrotXlocation()
+{
+    return this->carrotXLocation;
+}
 
-    robot1.x = -15;
-    robot1.y = -18;
+float Robot::getCarrotYlocation()
+{
+    return this->carrotYLocation;
+}
 
+/** set functions **/
 
-    while (ros::ok())
-    {
-        robot = moveRobot(robot);
-        robot1.x = robot.pose.position.x;
-        robot1.y = robot.pose.position.y;
-        marker_pub.publish(robot);
-        loc_pub.publish(robot1);
-        carloc_pub.publish(circle1);
-	    ros::Duration(.2).sleep();
-    }
+void Robot::setXLocation(float x)
+{
+    this->xLocation = x;
+}
 
+void Robot::setYLocation(float y)
+{
+    this->yLocation = y;
+}
 
+void Robot::setDirection(float radian)
+{
+    this->direction = radian;
+}
 
+void Robot::setState(State state)
+{
+    this->state = state;
+}
+
+void Robot::setCarrotXLocation(float x)
+{
+    this->carrotXLocation = x;
+}
+
+void Robot::setCarrotYLocation(float y)
+{
+    this->carrotYLocation = y;
+}
+
+/** modifier functions **/
+
+void Robot::changeDirection(float radian)
+{
+    this->direction += radian;
+}
+
+void Robot::moveRobot()
+{
+    /** add code here **/
+}
+
+void Robot::updateState()
+{
+    /** add code here **/
+}
+
+void publishThrottle()
+{
+    /** add code here **/
+}
+
+void publishSteering()
+{
+    /** add code here **/
+}
+
+void Robot::callbackUpdateRobotLocation(const geometry_msgs::Point::ConstPtr& robot)
+{
+    float radian = atan2(robot->y - this->getYLocation(),robot->x - this->getXLocation());
+    this->setXLocation(robot->x);
+    this->setYLocation(robot->y);
+    this->setDirection(radian);
+}
+
+void Robot::callbackUpdateCarrotLocation(const geometry_msgs::Point::ConstPtr& carrot)
+{
+    this->setCarrotXLocation(carrot->x);
+    this->setCarrotYLocation(carrot->y);
 }
