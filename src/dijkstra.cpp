@@ -1,4 +1,4 @@
-#include "path_planning/dijkstra.h"
+#include "rabbit_follow/dijkstra.h"
 #include "limits.h"
 
 dijkstra::dijkstra(int numNodes)

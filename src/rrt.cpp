@@ -1,4 +1,4 @@
-#include <path_planning/rrt.h>
+#include <rabbit_follow/rrt.h>
 #include <math.h>
 #include <cstddef>
 #include <iostream>

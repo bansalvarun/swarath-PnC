@@ -38,14 +38,16 @@ int main (int argc,char** argv)
     ros::init(argc,argv,"rabbit_follow_robot");
     ros::NodeHandle n;
 
-    ros::Publisher marker_pub = n.advertise<visualization_msgs::Marker>("rabbit_follow",10);
+    Robot robot;
 
-    visualization_msgs::Marker robot;
+//    ros::Publisher marker_pub = n.advertise<visualization_msgs::Marker>("rabbit_follow",10);
+//    ros::Subscriber sub = n.subscribe("RobotLocationUpdate", 1000, &Robot::callbackUpdateRobotLocation, &robot);
+  //  visualization_msgs::Marker robotOne;
 
 
-    while (ros::ok())
-    {
-        ros::Spin();
-    }
+   // while (ros::ok())
+    //{
+      //  ros::spinOnce();
+    //}
 
 }

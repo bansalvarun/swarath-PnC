@@ -99,6 +99,9 @@ include_directories(include
 ## Declare a cpp library
  add_library(rabbit_follow
    src/robot.cpp
+   src/rrt.cpp
+   src/obstacles.cpp
+   src/dijkstra.cpp
 )
 
 ## Declare a cpp executable
@@ -110,7 +113,7 @@ include_directories(include
 
 ## Specify libraries to link a library or executable target against
  target_link_libraries(rabbit_follow_node
-   ${catkin_LIBRARIES}
+   ${catkin_LIBRARIES} rabbit_follow
  )
 
 #############
