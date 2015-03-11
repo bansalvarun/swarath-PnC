@@ -9,9 +9,13 @@
 #ifndef Rabbit_H
 #define Rabbit_H
 
-#include <geometry_msgs/Point.h>
+#include <ros/ros.h>
+#include <std_msgs/String.h>
 #include <rabbit_follow/GlobalDeclaration.h>
 #include <rabbit_follow/carrotPosition.h>
+#include <vector>
+
+using namespace std;
 
 enum RabbitState{followingCarrot, reachedEnd};
 
@@ -25,11 +29,10 @@ class Rabbit
         virtual ~Rabbit();
 
         /** get functions **/
-        float getRabbitPosition();
+        Position getRabbitPosition();
         RabbitState getState();
         float getSteering();
         float getThrottle();
-        float getCarrotPosition();
 
         /** set functions **/
         void setRabbitPosition(Position rabbit);
@@ -37,16 +40,16 @@ class Rabbit
 
         /** modifier functions **/
         void changeSteering(float radian);
-        void changeThrottle(float throttle);
         void moveRabbit(const ros::TimerEvent& event);
-        void updateState();
+        void publishSteering();
+        void publishThrottle();
 
         void callbackUpdateRabbitGPSLocation(const std_msgs::String::ConstPtr& rabbit);
         void callbackUpdateRabbitIMULocation(const std_msgs::String::ConstPtr& rabbit);
         void callbackUpdateCarrotLocation(const rabbit_follow::carrotPosition::ConstPtr& carrot);
 
-        ros::Publisher steer_pub;
-        ros::Publisher throttle_pub;
+        ros::Publisher steer_publisher;
+        ros::Publisher throttle_publisher;
 
     protected:
     private:

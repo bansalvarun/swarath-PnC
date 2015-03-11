@@ -17,13 +17,13 @@ int main (int argc,char** argv)
 
     Rabbit rabbit;
 
-    rabbit.steer_pub = n.advertise<std_msgs::String>("steering_unity",10);
-    rabbit.throttle_pub = n.advertise<std_msgs::String>("throttle_unity",10);
+    rabbit.steer_publisher = n.advertise<std_msgs::String>("steering_unity",10);
+    rabbit.throttle_publisher = n.advertise<std_msgs::String>("throttle_unity",10);
 
     ros::Subscriber sub1 = n.subscribe("carrot_location_update", 1000, &Rabbit::callbackUpdateCarrotLocation, &rabbit);
     ros::Subscriber sub2 = n.subscribe("gps_unity", 1000, &Rabbit::callbackUpdateRabbitGPSLocation, &rabbit);
-    ros::Subscriber sub3 = n.subscribe("imu_unity", 1000, &Rabbit::callbackUpdateCarrotIMULocation, &rabbit);
+    ros::Subscriber sub3 = n.subscribe("imu_unity", 1000, &Rabbit::callbackUpdateRabbitIMULocation, &rabbit);
 
-    ros::Timer timer = n.createTimer(ros::Duration(0.1), &Rabbit::moveRabbit, $rabbit);
-    ros::Spin();
+    ros::Timer timer = n.createTimer(ros::Duration(0.1), &Rabbit::moveRabbit, &rabbit);
+    ros::spin();
 }

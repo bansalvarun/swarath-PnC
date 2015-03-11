@@ -20,5 +20,6 @@ std::string floatToString(float value)
 {
     std::ostringstream ss;
     ss << value;
-    return ss.str();
+    std::string s(ss.str());
+    return s;
 }

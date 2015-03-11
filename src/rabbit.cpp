@@ -23,7 +23,7 @@ Rabbit::~Rabbit()
 
 /** get functions **/
 
-float Rabbit::getXLocation()
+Position Rabbit::getRabbitPosition()
 {
     return this->rabbit;
 }
@@ -59,48 +59,52 @@ void Rabbit::setState(RabbitState state)
 
 void Rabbit::changeSteering(float radian)
 {
-    temp=this->steering;
+    float temp=this->steering;
     temp=temp*((7*M_PI/45));
 
-    radian=(radian+(38*M_PI/45))%38*M_PI/45;
+    radian = fmod(radian+(38*(M_PI/45)),38 * (M_PI/45));
     radian=radian-temp;
     radian=radian/((7*M_PI/45));
     this->steering=radian;
 }
 
-void Rabbit::changeThrottle(float radian)
-{
-    temp=this->steering;
-    temp=temp*((7*M_PI/45));
-
-    radian=(radian+(38*M_PI/45))%38*M_PI/45;
-    radian=radian-temp;
-    radian=radian/((7*M_PI/45));
-    this->steering=radian;
-}
-
-void Rabbit::moveRabbit()
+void Rabbit::moveRabbit(const ros::TimerEvent& event)
 {
     /** add code here **/
 }
 
-void Rabbit::updateState()
+void Rabbit::publishSteering()
 {
-    /** add code here **/
+    std_msgs::String temp;
+    temp.data = floatToString(this->getSteering());
+    steer_publisher.publish(temp);
 }
 
-
-void Rabbit::callbackUpdateRabbitGPSLocation(const geometry_msgs::Point::ConstPtr& rabbit)
+void Rabbit::publishThrottle()
 {
-
-    float radian = atan2(rabbit->y - this->getYLocation(),rabbit->x - this->getXLocation());
-    this->setXLocation(rabbit->x);
-    this->setYLocation(rabbit->y);
-    this->setDirection(radian);
+    std_msgs::String temp;
+    temp.data = floatToString(this->getThrottle());
+    throttle_publisher.publish(temp);
 }
 
-void Rabbit::callbackUpdateCarrotLocation(const geometry_msgs::Point::ConstPtr& carrot)
+void Rabbit::callbackUpdateRabbitGPSLocation(const std_msgs::String::ConstPtr& rabbit)
 {
-    this->setCarrotXLocation(carrot->x);
-    this->setCarrotYLocation(carrot->y);
+    vector<string> temp = split(rabbit->data,',');
+    this->rabbit.x = atof(temp[0].c_str());;
+    this->rabbit.y = atof(temp[1].c_str());;
+    this->rabbit.z = atof(temp[2].c_str());;
+}
+
+void Rabbit::callbackUpdateRabbitIMULocation(const std_msgs::String::ConstPtr& rabbit)
+{
+    vector<string> temp = split(rabbit->data,',');
+    this->steering = atof(temp[1].c_str());
+    this->steering -= 180;
+    this->steering *= M_PI / 180; //already set = no change
+}
+
+void Rabbit::callbackUpdateCarrotLocation(const rabbit_follow::carrotPosition::ConstPtr& carrot)
+{
+    this->carrotPos.carrotDistance  = carrot->carrotDistance;
+    this->carrotPos.carrotDirection = carrot->carrotDirection;
 }

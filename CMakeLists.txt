@@ -99,7 +99,7 @@ include_directories(include
 
 ## Declare a cpp library
  add_library(rabbit_follow
-#   src/rabbit.cpp
+   src/rabbit.cpp
    src/rrt.cpp
    src/obstacles.cpp
    src/dijkstra.cpp
