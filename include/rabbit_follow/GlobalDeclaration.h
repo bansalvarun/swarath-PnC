@@ -16,4 +16,6 @@ struct Position
 std::vector<std::string> split(const std::string &s, char delim);
 std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems);
 
+std::string floatToString(float value);
+
 #endif // GLOBALDECLARATION_H

@@ -15,3 +15,10 @@ std::vector<std::string> split(const std::string &s, char delim) {
     split(s, delim, elems);
     return elems;
 }
+
+std::string floatToString(float value)
+{
+    std::ostringstream ss;
+    ss << value;
+    return ss.str();
+}

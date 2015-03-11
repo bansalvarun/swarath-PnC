@@ -12,22 +12,7 @@
 /** constructors **/
 Rabbit::Rabbit()
 {
-    this->setXLocation(0);
-    this->setYLocation(0);
-    this->setDirection(0);
     this->setState(followingCarrot);
-    this->setCarrotXLocation(0);
-    this->setCarrotYLocation(0);
-}
-
-Rabbit::Rabbit(float x, float y, float radian, RabbitState state)
-{
-    this->setXLocation(x);
-    this->setYLocation(y);
-    this->setDirection(radian);
-    this->setState(state);
-    this->setCarrotXLocation(0);
-    this->setCarrotYLocation(0);
 }
 
 /** destructor **/
@@ -40,12 +25,7 @@ Rabbit::~Rabbit()
 
 float Rabbit::getXLocation()
 {
-    return this->xLocation;
-}
-
-float Rabbit::getYLocation()
-{
-    return this->yLocation;
+    return this->rabbit;
 }
 
 RabbitState Rabbit::getState()
@@ -53,36 +33,21 @@ RabbitState Rabbit::getState()
     return this->state;
 }
 
-float Rabbit::getDirection()
+float Rabbit::getSteering()
 {
-    return this->direction;
+    return this->steering;
 }
 
-float Rabbit::getCarrotXlocation()
+float Rabbit::getThrottle()
 {
-    return this->carrotXLocation;
-}
-
-float Rabbit::getCarrotYlocation()
-{
-    return this->carrotYLocation;
+    return this->throttle;
 }
 
 /** set functions **/
 
-void Rabbit::setXLocation(float x)
+void Rabbit::setRabbitPosition(Position rabbit)
 {
-    this->xLocation = x;
-}
-
-void Rabbit::setYLocation(float y)
-{
-    this->yLocation = y;
-}
-
-void Rabbit::setDirection(float radian)
-{
-    this->direction = radian;
+    this->rabbit = rabbit;
 }
 
 void Rabbit::setState(RabbitState state)
@@ -90,28 +55,28 @@ void Rabbit::setState(RabbitState state)
     this->state = state;
 }
 
-void Rabbit::setCarrotXLocation(float x)
-{
-    this->carrotXLocation = x;
-}
-
-void Rabbit::setCarrotYLocation(float y)
-{
-    this->carrotYLocation = y;
-}
-
 /** modifier functions **/
 
-void Rabbit::changeDirection(float radian)
+void Rabbit::changeSteering(float radian)
 {
-    temp=this->direction;
+    temp=this->steering;
     temp=temp*((7*M_PI/45));
-    
+
     radian=(radian+(38*M_PI/45))%38*M_PI/45;
     radian=radian-temp;
     radian=radian/((7*M_PI/45));
-    this->direction=radian;
-    
+    this->steering=radian;
+}
+
+void Rabbit::changeThrottle(float radian)
+{
+    temp=this->steering;
+    temp=temp*((7*M_PI/45));
+
+    radian=(radian+(38*M_PI/45))%38*M_PI/45;
+    radian=radian-temp;
+    radian=radian/((7*M_PI/45));
+    this->steering=radian;
 }
 
 void Rabbit::moveRabbit()
@@ -124,15 +89,6 @@ void Rabbit::updateState()
     /** add code here **/
 }
 
-void publishThrottle()
-{
-    /** add code here **/
-}
-
-void publishSteering()
-{
-    /** add code here **/
-}
 
 void Rabbit::callbackUpdateRabbitLocation(const geometry_msgs::Point::ConstPtr& rabbit)
 {

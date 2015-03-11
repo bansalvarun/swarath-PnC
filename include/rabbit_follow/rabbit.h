@@ -11,6 +11,7 @@
 
 #include <geometry_msgs/Point.h>
 #include <rabbit_follow/GlobalDeclaration.h>
+#include <rabbit_follow/carrotPosition.h>
 
 enum RabbitState{followingCarrot, reachedEnd};
 
@@ -19,7 +20,6 @@ class Rabbit
     public:
         /** Default constructor */
         Rabbit();
-        Rabbit(float x, float y, float radian, RabbitState state);
 
         /** Default destructor */
         virtual ~Rabbit();
@@ -28,36 +28,38 @@ class Rabbit
         float getRabbitPosition();
         RabbitState getState();
         float getSteering();
-        float getCarrotXlocation();
-        float getCarrotYlocation();
+        float getThrottle();
+        float getCarrotPosition();
 
         /** set functions **/
-        void setXLocation(float x);
-        void setYLocation(float y);
-        void setDirection(float radian);
+        void setRabbitPosition(Position rabbit);
         void setState(RabbitState state);
-        void setCarrotXLocation(float x);
-        void setCarrotYLocation(float y);
 
         /** modifier functions **/
-        void changeDirection(float radian);
-        void moveRabbit();
+        void changeSteering(float radian);
+        void changeThrottle(float throttle);
+        void moveRabbit(const ros::TimerEvent& event);
         void updateState();
 
-        void publishThrottle();
-        void publishSteering();
+        void callbackUpdateRabbitGPSLocation(const geometry_msgs::Point::ConstPtr& rabbit);
+        void callbackUpdateRabbitIMULocation(const geometry_msgs::Point::ConstPtr& rabbit);
+        void callbackUpdateCarrotLocation(const rabbit_follow::carrotPosition::ConstPtr& carrot);
 
-        void callbackUpdateRabbitLocation(const geometry_msgs::Point::ConstPtr& rabbit);
-        void callbackUpdateCarrotLocation(const geometry_msgs::Point::ConstPtr& carrot);
+        ros::Publisher steer_pub;
+        ros::Publisher throttle_pub;
 
     protected:
     private:
 
         Position rabbit;
-        float carrotDirection;
-        float carrotDistance;
+
+        rabbit_follow::carrotPosition carrotPos;
+
         float steering;
         float throttle;
+
+        float velocity;
+
         RabbitState state;
 };
 
