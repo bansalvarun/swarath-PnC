@@ -10,7 +10,8 @@
 #define CARROT_H
 
 #include <geometry_msgs/Point.h>
-#include <rabbit_follow/GlobalDeclaration.h>
+#include "rabbit_follow/GlobalDeclaration.h"
+#include <rabbit_follow/carrotPosition.h>
 #include <vector>
 
 using namespace std;
@@ -33,20 +34,18 @@ class Carrot
         Position getRabbitLocation();
         CarrotState getState();
         Position getWayPoint(int id);
-        bool isRabbitLocationUpdated();
         int getCurrentWayPointID();
 
         /** set functions **/
         void setCarrotLocation(Position carrot);
         void setRabbitLocation(Position rabbit);
         void setState(CarrotState state);
-        void rabbitLocationUpdated(bool state);
         void incrementCurrentWayPointID();
         void setCurrentWayPointID(int id);
-
+        void setCarrotRabbitPosition(float distance, float direction);
         /** modifier functions **/
         void moveCarrot();
-        void updateState();
+//        void updateState();
 
         void callbackUpdateRabbitLocation(const geometry_msgs::Point::ConstPtr& rabbit);
 
@@ -57,13 +56,10 @@ class Carrot
 
         vector <Position> wayPointPath;
 
-        bool rabbitLocationUpdate;
-
         Position carrot;
         Position rabbit;
 
-        float carrotHeadingAngle;
-        float carrotRabbitDistance;
+        rabbit_follow::carrotPosition carrotPos;
 
         CarrotState state;
 
@@ -72,7 +68,5 @@ class Carrot
         float getEuclideanDistance(Position one, Position two);
         void getLineIntersection(Position linePointOne, Position linePointTwo, Position robotLocation, Position &intersectionPoint);
 };
-
-//float Carrot::MaximumDistanceFromRabbit = 5;
 
 #endif // CARROT_H

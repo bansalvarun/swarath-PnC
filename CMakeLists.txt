@@ -7,7 +7,7 @@ project(rabbit_follow)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
-  generate_messages
+  message_generation
 )
 
 ## System dependencies are found with CMake's conventions
@@ -44,11 +44,11 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   Message1.msg
+ add_message_files(
+   FILES
+   carrotPosition.msg
 #   Message2.msg
-# )
+ )
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -65,10 +65,10 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs
-# )
+ generate_messages(
+   DEPENDENCIES
+   std_msgs
+ )
 
 ###################################
 ## catkin specific configuration ##
@@ -99,11 +99,12 @@ include_directories(include
 
 ## Declare a cpp library
  add_library(rabbit_follow
-   src/rabbit.cpp
+#   src/rabbit.cpp
    src/rrt.cpp
    src/obstacles.cpp
    src/dijkstra.cpp
    src/carrot.cpp
+   src/GlobalDeclaration.cpp
 )
 
 ## Declare a cpp executable

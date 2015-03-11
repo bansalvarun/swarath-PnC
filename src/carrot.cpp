@@ -8,7 +8,6 @@ Carrot::Carrot(string filename)
     this->readWayPointsFromFile(filename);
     this->carrot.x = this->getWayPoint(0).x;
     this->carrot.y = this->getWayPoint(0).y;
-    this->rabbitLocationUpdate = false;
     this->currentWayPointID=0;
     this->state = MovingOnLine;
 }
@@ -35,14 +34,14 @@ CarrotState Carrot::getState()
     return this->state;
 }
 
-float Carrot::getHeadingAngle()
-{
-    return this->carrotHeadingAngle;
-}
-
 Position Carrot::getWayPoint(int id)
 {
     return this->wayPointPath[id];
+}
+
+int Carrot::getCurrentWayPointID()
+{
+    this->currentWayPointID;
 }
 
 /** set functions **/
@@ -56,101 +55,78 @@ void Carrot::setRabbitLocation(Position rabbit)
     this->rabbit = rabbit;
 }
 
-void Carrot::setHeadingAngle(float radian)
-{
-    this->carrotHeadingAngle = radian;
-}
-
 void Carrot::setState(CarrotState state)
 {
     this->state = state;
 }
 
-void Carrot::rabbitLocationUpdated(bool state)
-{
-	this->rabbitLocationUpdate = state;
-}
-
 void Carrot::incrementCurrentWayPointID()
 {
-	this->currentWayPointID+=1;
+	this->currentWayPointID += 1;
 }
 
-void setCurrentWayPointID(int id)
+void Carrot::setCurrentWayPointID(int id)
 {
-	this->currentWayPointID=id;
+	this->currentWayPointID = id;
 }
+
+void Carrot::setCarrotRabbitPosition(float distance, float direction)
+{
+    this->carrotPos.carrotDirection = direction;
+    this->carrotPos.carrotDistance = distance;
+}
+
 
 /** modifier functions **/
-void Carrot::changeHeadingAngle(float radian)
-{
-    this->carrotHeadingAngle += radian;
-}
-
-
 void Carrot::moveCarrot()
 {
-    
-    if(getState()==ReachedEnd)
+    float crDirection;
+    if(getState() == ReachedEnd)
     {
     	return;
     }
-    else if(getState()==ReachedWaypoint)
-    {   float crDistance;
-		crDistance=getEuclideanDistance(getRabbitLocation(), getCarrotLocation(currentWayPointID))
-		setCarrotRabbitDistance(crDistance);
+    else if(getState() == ReachedWaypoint)
+    {
+		float crDistance=getEuclideanDistance(getRabbitLocation(), getCarrotLocation());
     	if(crDistance<1)
     		setState(MovingOnLine);
+        else
+        {
+            crDirection = atan2(getCarrotLocation().y - getRabbitLocation().y, getCarrotLocation().x - getRabbitLocation().x);
+            setCarrotRabbitPosition(crDistance, crDirection);
+        }
     }
-    else
+    else if(getState() == MovingOnLine)
     {
     	Position intersectionPoint;
     	float dist,dist1;
     	getLineIntersection(getWayPoint(currentWayPointID), getWayPoint(currentWayPointID-1), getRabbitLocation(), intersectionPoint);
-    	carrotHeadingAngle = atan2(getWayPoint(currentWayPointID).y-getWayPoint(currentWayPointID-1).y,getWayPoint(currentWayPointID).x-getWayPoint(currentWayPointID-1).x);
+    	float carrotHeadingAngle = atan2(getWayPoint(currentWayPointID).y-getWayPoint(currentWayPointID-1).y,getWayPoint(currentWayPointID).x-getWayPoint(currentWayPointID-1).x);
     	Position temp;
     	temp.x = intersectionPoint.x + ((MaximumDistanceFromRabbit) * cos(carrotHeadingAngle));
     	temp.y = intersectionPoint.y + ((MaximumDistanceFromRabbit) * sin(carrotHeadingAngle));
-    	dist=getEuclideanDistance(temp, getWayPoint(currentWayPointID-1))
-    	dist1=getEuclideanDistance(getWayPoint(currentWayPointID-1), getWayPoint(currentWayPointID))
+    	dist  = getEuclideanDistance(temp, getWayPoint(currentWayPointID-1));
+    	dist1 = getEuclideanDistance(getWayPoint(currentWayPointID-1), getWayPoint(currentWayPointID));
     	if (dist > dist1)
     	{
     	    carrot=getWayPoint(currentWayPointID);
-    	    
-    	}  
-    	
+    	}
+    	crDirection = atan2(getCarrotLocation().y - getRabbitLocation().y, getCarrotLocation().x - getRabbitLocation().x);
+    	float crDistance=getEuclideanDistance(getRabbitLocation(), getCarrotLocation());
+        setCarrotRabbitPosition(crDistance, crDirection);
     }
-
-
 }
-
-void Carrot::updateState()
-{
-
-}
+//
+//void Carrot::updateState()
+//{
+//
+//}
 
 void Carrot::callbackUpdateRabbitLocation(const geometry_msgs::Point::ConstPtr& rabbitMsg)
 {
     this->rabbit.x = rabbitMsg->x;
     this->rabbit.y = rabbitMsg->y;
     this->rabbit.z = rabbitMsg->z;
-    this->rabbitLocationUpdate = true;
-}
-
-std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems) {
-    std::stringstream ss(s);
-    std::string item;
-    while (std::getline(ss, item, delim)) {
-        elems.push_back(item);
-    }
-    return elems;
-}
-
-
-std::vector<std::string> split(const std::string &s, char delim) {
-    std::vector<std::string> elems;
-    split(s, delim, elems);
-    return elems;
 }
 
 void Carrot::readWayPointsFromFile(string filename)
