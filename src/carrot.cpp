@@ -10,6 +10,7 @@ Carrot::Carrot(string filename)
     this->carrot.y = this->getWayPoint(0).y;
     this->rabbitLocationUpdate = false;
     this->currentWayPointID=0;
+    this->state = MovingOnLine;
 }
 
 /** Default destructor */
@@ -89,7 +90,27 @@ void Carrot::changeHeadingAngle(float radian)
 
 void Carrot::moveCarrot()
 {
-    
+    Position intersectionPoint;
+    getLineIntersection(getWayPoint(currentWayPointID), getWayPoint(currentWayPointID-1), getRabbitLocation(), intersectionPoint);
+    if(getState==ReachedEnd)
+    {
+    	return;
+    }
+    else if(getState==ReachedWaypoint)
+    {
+    	if(getEuclideanDistance(getRabbitLocation(), getWayPoint(currentWayPointID))<1)
+    		setState(MovingOnLine);
+    }
+    else
+    {
+    	carrotHeadingAngle = atan2(getWayPoint(currentWayPointID).y-getWayPoint(currentWayPointID-1).y,getWayPoint(currentWayPointID).x-getWayPoint(currentWayPointID-1).x);
+    	Position temp;
+    	temp.x = intersectionPoint.x + ((MaximumDistanceFromRabbit) * cos(carrotHeadingAngle));
+    	temp.y = intersectionPoint.y + ((MaximumDistanceFromRabbit) * sin(carrotHeadingAngle));
+    	
+    }
+
+
 }
 
 void Carrot::updateState()
