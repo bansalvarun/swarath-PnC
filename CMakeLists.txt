@@ -102,6 +102,7 @@ include_directories(include
    src/rrt.cpp
    src/obstacles.cpp
    src/dijkstra.cpp
+   src/carrot.cpp
 )
 
 ## Declare a cpp executable

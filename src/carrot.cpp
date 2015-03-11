@@ -1,132 +1,152 @@
+#include <rabbit_follow/carrot.h>
 #include <ros/ros.h>
-#include <visualization_msgs/Marker.h>
-#include <cmath>
-#include <vector>
+#include <fstream>
 
-int currentD=0;
-
-bool moveCarrotFlag = true;
-
-visualization_msgs::Marker make_line_one (visualization_msgs::Marker line_strip)
+/** Default constructor */
+Carrot::Carrot(string filename)
 {
-            geometry_msgs::Point p;
-            p.x = -7;
-            p.y = -14;
-            line_strip.points.push_back(p);
-            p.x = -7;
-            p.y = 16;
-            line_strip.points.push_back(p);
-            p.x = 8;
-            p.y = 16;
-            line_strip.points.push_back(p);
-            p.x = 8;
-            p.y = 46;
-            line_strip.points.push_back(p);
-           // marker_pub.publish(line_strip);
-            return line_strip;
+    this->readWayPointsFromFile(filename);
+    this->carrot.x = this->getWayPoint(0).x;
+    this->carrot.y = this->getWayPoint(0).y;
+    this->rabbitLocationUpdate = false;
 }
 
-visualization_msgs::Marker moveCarrot(visualization_msgs::Marker circle, visualization_msgs::Marker line_strip1)
+/** Default destructor */
+Carrot::~Carrot()
 {
-    float dist;
+
+}
+
+/** get functions **/
+Position Carrot::getCarrotLocation()
+{
+    return this->carrot;
+}
+
+Position Carrot::getRabbitLocation()
+{
+    return this->rabbit;
+}
+
+CarrotState Carrot::getState()
+{
+    return this->state;
+}
+
+float Carrot::getHeadingAngle()
+{
+    return this->carrotHeadingAngle;
+}
+
+Position Carrot::getWayPoint(int id)
+{
+    return this->wayPointPath[id];
+}
+
+/** set functions **/
+void Carrot::setCarrotLocation(Position carrot)
+{
+    this->carrot = carrot;
+}
+
+void Carrot::setRabbitLocation(Position rabbit)
+{
+    this->rabbit = rabbit;
+}
+
+void Carrot::setHeadingAngle(float radian)
+{
+    this->carrotHeadingAngle = radian;
+}
+
+void Carrot::setState(CarrotState state)
+{
+    this->state = state;
+}
+
+/** modifier functions **/
+void Carrot::changeHeadingAngle(float radian)
+{
+    this->carrotHeadingAngle += radian;
+}
 
 
-    dist=pow(pow(line_strip1.points[currentD].x-circle.pose.position.x,2)+pow(line_strip1.points[currentD].y-circle.pose.position.y,2),0.5);
-    if(dist<1)
+void Carrot::moveCarrot()
+{
+
+}
+
+void Carrot::updateState()
+{
+
+}
+
+void Carrot::callbackUpdateRabbitLocation(const geometry_msgs::Point::ConstPtr& rabbitMsg)
+{
+    this->rabbit.x = rabbitMsg->x;
+    this->rabbit.y = rabbitMsg->y;
+    this->rabbit.z = rabbitMsg->z;
+    this->rabbitLocationUpdate = true;
+}
+
+std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems) {
+    std::stringstream ss(s);
+    std::string item;
+    while (std::getline(ss, item, delim)) {
+        elems.push_back(item);
+    }
+    return elems;
+}
+
+
+std::vector<std::string> split(const std::string &s, char delim) {
+    std::vector<std::string> elems;
+    split(s, delim, elems);
+    return elems;
+}
+
+void Carrot::readWayPointsFromFile(string filename)
+{
+    if(filename[0] == '\0') return;
+    Position  position;
+    this->wayPointPath.clear();
+    string line;
+    ifstream myfile (filename.c_str());
+    if (myfile.is_open())
     {
-        currentD++;
-        if(currentD>=4)
+        while ( getline (myfile,line) )
         {
-            moveCarrotFlag = false;
-            return circle;
+            vector<string> temp = split(line,',');
+            position.x = atof(temp[0].c_str());
+            position.y = atof(temp[1].c_str());
+            position.z = atof(temp[1].c_str());
+            this->wayPointPath.push_back(position);
         }
+        myfile.close();
     }
-    double theta = atan2(line_strip1.points[currentD].y-circle.pose.position.y,line_strip1.points[currentD].x-circle.pose.position.x);
-    circle.pose.position.x+= 1*cos(theta);
-    circle.pose.position.y+= 1*sin(theta);
-    return circle;
+    else
+    {
+        ROS_INFO("Unable to read File");
+        exit(1);
+    }
 }
 
-visualization_msgs::Marker moveRobot(visualization_msgs::Marker robot, visualization_msgs::Marker circle)
+float Carrot::getEuclideanDistance(Position one, Position two)
 {
-    float dist=pow(pow(robot.pose.position.x-circle.pose.position.x,2)+pow(robot.pose.position.y-circle.pose.position.y,2),0.5);
-    if(dist<1)
-    {
-       exit(1);
-    }
-    double theta = atan2(circle.pose.position.y-robot.pose.position.y,circle.pose.position.x - robot.pose.position.x);
-    robot.pose.position.x+= 0.8*cos(theta);
-    robot.pose.position.y+= 0.8*sin(theta);
-    return robot;
+    return sqrt( pow( one.x - two.x ,2) + pow( one.y - two.y  ,2) );
 }
 
-int main (int argc,char** argv)
+void Carrot::getLineIntersection(Position linePointOne, Position linePointTwo, Position robotLocation, Position &intersectionPoint)
 {
-    ros::init(argc,argv,"path");
-    ros::NodeHandle n;
-    ros::Publisher marker_pub = n.advertise<visualization_msgs::Marker>("path",10);
-    visualization_msgs::Marker line_strip1,circle,robot;
-    ros::Rate r(100);
+    // first convert line to normalized unit vector
+    double dx = linePointTwo.x - linePointOne.x;
+    double dy = linePointTwo.y - linePointOne.y;
+    double mag = sqrt(dx*dx + dy*dy);
+    dx /= mag;
+    dy /= mag;
 
-    line_strip1.header.frame_id=circle.header.frame_id=robot.header.frame_id= "/my_path";
-    line_strip1.header.stamp=circle.header.stamp=robot.header.stamp= ros::Time::now();
-    line_strip1.ns=circle.ns= robot.ns="path";
-    line_strip1.id =1;
-    circle.id=2;
-    robot.id=3;
-    line_strip1.action=circle.action= robot.action= visualization_msgs::Marker::ADD;
-    line_strip1.pose.orientation.w=circle.pose.orientation.w= 1.0;
-
-    line_strip1.type= visualization_msgs::Marker::LINE_STRIP;
-    circle.type= visualization_msgs::Marker::SPHERE;
-    robot.type= visualization_msgs::Marker::SPHERE;
-
-    circle.scale.x=1.0;
-    circle.scale.y=1.0;
-    circle.scale.z=1.0;
-
-
-    robot.scale.x=1.0;
-    robot.scale.y=1.0;
-    robot.scale.z=1.0;
-
-    line_strip1.scale.x= 1;
-    line_strip1.scale.y= 1;
-
-    circle.color.r = 0.0f;
-    circle.color.g = 1.0f;
-    circle.color.b = 0.0f;
-    circle.color.a = 1.0;
-
-    robot.color.g = 1.0f;
-    robot.color.a = 1.0;
-
-    line_strip1.color.b=1.0;
-    line_strip1.color.a=1.0;
-
-    robot.pose.position.x = -15;
-    robot.pose.position.y = -18;
-
-    circle.pose.position.x = -7;
-    circle.pose.position.y = -14;
-    circle.pose.position.z = 0.0;
-
-    line_strip1 = make_line_one(line_strip1);
-    marker_pub.publish(line_strip1);
-   // marker_pub.publish(circle);
-    //std::cout<<line_strip1.points.size();
-
-    ros::Duration(3).sleep();
-
-    while (ros::ok())
-    {
-        if(moveCarrotFlag)
-            circle = moveCarrot(circle,line_strip1);
-        robot = moveRobot(robot,circle);
-        marker_pub.publish(circle);
-        marker_pub.publish(robot);
-        marker_pub.publish(line_strip1);
-        ros::Duration(0.2).sleep();
-    }
-
+    // translate the point and get the dot product
+    double lambda = (dx * (robotLocation.x - linePointOne.x)) + (dy * (robotLocation.y - linePointOne.y));
+    intersectionPoint.x = (dx * lambda) + linePointOne.x;
+    intersectionPoint.y = (dy * lambda) + linePointOne.y;
 }

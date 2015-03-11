@@ -6,43 +6,43 @@
 #include <cstdlib>
 
 
-std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems) {
-    std::stringstream ss(s);
-    std::string item;
-    while (std::getline(ss, item, delim)) {
-        elems.push_back(item);
-    }
-    return elems;
-}
-
-
-std::vector<std::string> split(const std::string &s, char delim) {
-    std::vector<std::string> elems;
-    split(s, delim, elems);
-    return elems;
-}
+//std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems) {
+//    std::stringstream ss(s);
+//    std::string item;
+//    while (std::getline(ss, item, delim)) {
+//        elems.push_back(item);
+//    }
+//    return elems;
+//}
+//
+//
+//std::vector<std::string> split(const std::string &s, char delim) {
+//    std::vector<std::string> elems;
+//    split(s, delim, elems);
+//    return elems;
+//}
 
 
 vector<obstacleDef> getObstaclesFromFile()
 {
     obstacleDef obstaclePoint;
     vector<obstacleDef> myObstacles;
-    string line;
-    ifstream myfile ("obstacle.txt");
-    if (myfile.is_open())
-    {
-    while ( getline (myfile,line) )
-    {
-        vector<string> temp = split(line,',');
-        obstaclePoint.x = atof(temp[0].c_str());
-        obstaclePoint.y = atof(temp[1].c_str());
-        obstaclePoint.height = atof(temp[3].c_str());
-        obstaclePoint.width = atof(temp[2].c_str());
-        myObstacles.push_back(obstaclePoint);
-    }
-    myfile.close();
-    }
-    else cout << "Unable to open file";
+//    string line;
+//    ifstream myfile ("obstacle.txt");
+//    if (myfile.is_open())
+//    {
+//    while ( getline (myfile,line) )
+//    {
+//        vector<string> temp = split(line,',');
+//        obstaclePoint.x = atof(temp[0].c_str());
+//        obstaclePoint.y = atof(temp[1].c_str());
+//        obstaclePoint.height = atof(temp[3].c_str());
+//        obstaclePoint.width = atof(temp[2].c_str());
+//        myObstacles.push_back(obstaclePoint);
+//    }
+//    myfile.close();
+//    }
+//    else cout << "Unable to open file";
     return myObstacles;
 }
 

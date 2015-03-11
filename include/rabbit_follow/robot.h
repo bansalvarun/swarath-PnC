@@ -11,14 +11,14 @@
 
 #include <geometry_msgs/Point.h>
 
-enum State{followingCarrot, reachedEnd};
+enum robotState{followingCarrot, reachedEnd};
 
 class Robot
 {
     public:
         /** Default constructor */
         Robot();
-        Robot(float x, float y, float radian, State state);
+        Robot(float x, float y, float radian, robotState state);
 
         /** Default destructor */
         virtual ~Robot();
@@ -26,7 +26,7 @@ class Robot
         /** get functions **/
         float getXLocation();
         float getYLocation();
-        State getState();
+        robotState getState();
         float getDirection();
         float getCarrotXlocation();
         float getCarrotYlocation();
@@ -35,7 +35,7 @@ class Robot
         void setXLocation(float x);
         void setYLocation(float y);
         void setDirection(float radian);
-        void setState(State state);
+        void setState(robotState state);
         void setCarrotXLocation(float x);
         void setCarrotYLocation(float y);
 
@@ -57,7 +57,7 @@ class Robot
         float carrotXLocation;
         float carrotYLocation;
         float direction;
-        State state;
+        robotState state;
 };
 
 #endif // ROBOT_H

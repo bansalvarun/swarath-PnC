@@ -20,7 +20,7 @@ Robot::Robot()
     this->setCarrotYLocation(0);
 }
 
-Robot::Robot(float x, float y, float radian, State state)
+Robot::Robot(float x, float y, float radian, robotState state)
 {
     this->setXLocation(x);
     this->setYLocation(y);
@@ -48,7 +48,7 @@ float Robot::getYLocation()
     return this->yLocation;
 }
 
-State Robot::getState()
+robotState Robot::getState()
 {
     return this->state;
 }
@@ -85,7 +85,7 @@ void Robot::setDirection(float radian)
     this->direction = radian;
 }
 
-void Robot::setState(State state)
+void Robot::setState(robotState state)
 {
     this->state = state;
 }

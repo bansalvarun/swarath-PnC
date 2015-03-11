@@ -41,7 +41,7 @@ int main (int argc,char** argv)
     Robot robot;
 
 //    ros::Publisher marker_pub = n.advertise<visualization_msgs::Marker>("rabbit_follow",10);
-//    ros::Subscriber sub = n.subscribe("RobotLocationUpdate", 1000, &Robot::callbackUpdateRobotLocation, &robot);
+    ros::Subscriber sub = n.subscribe("RobotLocationUpdate", 1000, &Robot::callbackUpdateRobotLocation, &robot);
   //  visualization_msgs::Marker robotOne;
 
 
