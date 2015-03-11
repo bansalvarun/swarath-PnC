@@ -109,19 +109,21 @@ void Rabbit::callbackUpdateRabbitGPSLocation(const std_msgs::String::ConstPtr& r
     tempGPS.y = atof(temp[1].c_str());;
     tempGPS.z = atof(temp[2].c_str());;
 
-    temp distance = getEuclideanDistance(tempGPS,getRabbitPosition());
+    float distance = getEuclideanDistance(tempGPS,getRabbitPosition());
     ros::Time time = ros::Time::now();
-    this->lastUpdateTime = ros::Time::now();
-    float totalTime = endTime.sec - time.sec;
-    int nsec = endTime.nsec - time.nsec;
+
+    float totalTime = lastUpdateTime.sec - time.sec;
+    int nsec = lastUpdateTime.nsec - time.nsec;
     if(nsec < 0)
     {
         totalTime -= 1;
         nsec += 1000000000;
     }
-    totalTime += (nsec/1000000000);
+    totalTime += (nsec/1000000000.0);
 
     this->velocity = distance/totalTime;
+    this->rabbit = tempGPS;
+    this->lastUpdateTime = ros::Time::now();
 }
 
 void Rabbit::callbackUpdateRabbitIMULocation(const std_msgs::String::ConstPtr& rabbit)

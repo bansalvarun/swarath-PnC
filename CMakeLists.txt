@@ -119,6 +119,16 @@ include_directories(include
    ${catkin_LIBRARIES} rabbit_follow
  )
 
+## Declare a cpp executable
+ add_executable(rabbit_node src/rabbit_node.cpp)
+add_executable(carrot_node src/carrot_node.cpp)
+## Add cmake target dependencies of the executable/library
+## as an example, message headers may need to be generated before nodes
+ add_dependencies(rabbit_node rabbit_follow_generate_messages_cpp)
+add_dependencies(carrot_node rabbit_follow_generate_messages_cpp)
+## Specify libraries to link a library or executable target against
+ target_link_libraries(rabbit_node ${catkin_LIBRARIES} rabbit_follow)
+target_link_libraries(carrot_node ${catkin_LIBRARIES} rabbit_follow)
 #############
 ## Install ##
 #############

@@ -6,8 +6,7 @@
 #include <fstream>
 #include <sstream>
 
-float MaximumDistanceFromRabbit = 5;
-float MinimumDistanceFromRabbit = 1;
+const float MaximumDistanceFromRabbit = 5;
 
 struct Position
 {
