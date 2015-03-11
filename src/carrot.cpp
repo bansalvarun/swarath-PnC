@@ -9,6 +9,7 @@ Carrot::Carrot(string filename)
     this->carrot.x = this->getWayPoint(0).x;
     this->carrot.y = this->getWayPoint(0).y;
     this->rabbitLocationUpdate = false;
+    this->currentWayPointID=0;
 }
 
 /** Default destructor */
@@ -64,6 +65,8 @@ void Carrot::setState(CarrotState state)
     this->state = state;
 }
 
+void rabbitLocationUpdated(bool state);
+
 /** modifier functions **/
 void Carrot::changeHeadingAngle(float radian)
 {
@@ -73,7 +76,7 @@ void Carrot::changeHeadingAngle(float radian)
 
 void Carrot::moveCarrot()
 {
-
+    getLineIntersection()
 }
 
 void Carrot::updateState()

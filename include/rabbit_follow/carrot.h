@@ -41,6 +41,7 @@ class Carrot
         float getHeadingAngle();
         Position getWayPoint(int id);
         bool isRabbitLocationUpdated();
+        int getCurrentWayPointID();
 
         /** set functions **/
         void setCarrotLocation(Position carrot);
@@ -48,6 +49,8 @@ class Carrot
         void setHeadingAngle(float radian);
         void setState(CarrotState state);
         void rabbitLocationUpdated(bool state);
+        void incrementCurrentWayPointID();
+        void setCurrentWayPointID(int id);
 
         /** modifier functions **/
         void changeHeadingAngle(float radian);
@@ -67,7 +70,7 @@ class Carrot
         Position rabbit;
         float carrotHeadingAngle;
         CarrotState state;
-
+        int currentWayPointID;
         float getEuclideanDistance(Position one, Position two);
         void getLineIntersection(Position linePointOne, Position linePointTwo, Position robotLocation, Position &intersectionPoint);
 };
