@@ -7,7 +7,7 @@ Carrot::Carrot(string filename)
 {
     this->readWayPointsFromFile(filename);
     this->carrot.x = this->getWayPoint(0).x;
-    this->carrot.y = this->getWayPoint(0).y;
+    this->carrot.z = this->getWayPoint(0).z;
     this->currentWayPointID=0;
     this->state = MovingOnLine;
 }
@@ -92,7 +92,7 @@ void Carrot::moveCarrot(const ros::TimerEvent& event)
     		setState(MovingOnLine);
         else
         {
-            crDirection = atan2(getCarrotLocation().y - getRabbitLocation().y, getCarrotLocation().x - getRabbitLocation().x);
+            crDirection = atan2(getCarrotLocation().z - getRabbitLocation().z, getCarrotLocation().x - getRabbitLocation().x);
             setCarrotRabbitPosition(crDistance, crDirection);
         }
     }
@@ -101,17 +101,17 @@ void Carrot::moveCarrot(const ros::TimerEvent& event)
     	Position intersectionPoint;
     	float dist,dist1;
     	getLineIntersection(getWayPoint(currentWayPointID), getWayPoint(currentWayPointID-1), getRabbitLocation(), intersectionPoint);
-    	float carrotHeadingAngle = atan2(getWayPoint(currentWayPointID).y-getWayPoint(currentWayPointID-1).y,getWayPoint(currentWayPointID).x-getWayPoint(currentWayPointID-1).x);
+    	float carrotHeadingAngle = atan2(getWayPoint(currentWayPointID).z-getWayPoint(currentWayPointID-1).z,getWayPoint(currentWayPointID).x-getWayPoint(currentWayPointID-1).x);
     	Position temp;
     	temp.x = intersectionPoint.x + ((MaximumDistanceFromRabbit) * cos(carrotHeadingAngle));
-    	temp.y = intersectionPoint.y + ((MaximumDistanceFromRabbit) * sin(carrotHeadingAngle));
+    	temp.z = intersectionPoint.z + ((MaximumDistanceFromRabbit) * sin(carrotHeadingAngle));
     	dist  = getEuclideanDistance(temp, getWayPoint(currentWayPointID-1));
     	dist1 = getEuclideanDistance(getWayPoint(currentWayPointID-1), getWayPoint(currentWayPointID));
     	if (dist > dist1)
     	{
     	    carrot=getWayPoint(currentWayPointID);
     	}
-    	crDirection = atan2(getCarrotLocation().y - getRabbitLocation().y, getCarrotLocation().x - getRabbitLocation().x);
+    	crDirection = atan2(getCarrotLocation().z - getRabbitLocation().z, getCarrotLocation().x - getRabbitLocation().x);
     	float crDistance=getEuclideanDistance(getRabbitLocation(), getCarrotLocation());
         setCarrotRabbitPosition(crDistance, crDirection);
     }
@@ -157,22 +157,18 @@ void Carrot::readWayPointsFromFile(string filename)
     }
 }
 
-float Carrot::getEuclideanDistance(Position one, Position two)
-{
-    return sqrt( pow( one.x - two.x ,2) + pow( one.y - two.y  ,2) );
-}
 
 void Carrot::getLineIntersection(Position linePointOne, Position linePointTwo, Position robotLocation, Position &intersectionPoint)
 {
     // first convert line to normalized unit vector
     double dx = linePointTwo.x - linePointOne.x;
-    double dy = linePointTwo.y - linePointOne.y;
-    double mag = sqrt(dx*dx + dy*dy);
+    double dz = linePointTwo.z - linePointOne.z;
+    double mag = sqrt(dx*dx + dz*dz);
     dx /= mag;
-    dy /= mag;
+    dz /= mag;
 
     // translate the point and get the dot product
-    double lambda = (dx * (robotLocation.x - linePointOne.x)) + (dy * (robotLocation.y - linePointOne.y));
+    double lambda = (dx * (robotLocation.x - linePointOne.x)) + (dz * (robotLocation.z - linePointOne.z));
     intersectionPoint.x = (dx * lambda) + linePointOne.x;
-    intersectionPoint.y = (dy * lambda) + linePointOne.y;
+    intersectionPoint.z = (dz * lambda) + linePointOne.z;
 }

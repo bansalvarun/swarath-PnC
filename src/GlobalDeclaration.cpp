@@ -23,3 +23,8 @@ std::string floatToString(float value)
     std::string s(ss.str());
     return s;
 }
+
+float getEuclideanDistance(Position one, Position two)
+{
+    return sqrt( pow( one.x - two.x ,2) + pow( one.z - two.z  ,2) );
+}
