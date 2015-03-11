@@ -23,7 +23,6 @@ enum CarrotState{MovingOnLine, ReachedWaypoint, ReachedEnd};
 class Carrot
 {
     public:
-        const static float MaximumDistanceFromRabbit = 5;
 
         /** Default constructor */
         Carrot(string filename);
@@ -69,8 +68,6 @@ class Carrot
         CarrotState state;
 
         int currentWayPointID;
-
-        float getEuclideanDistance(Position one, Position two);
         void getLineIntersection(Position linePointOne, Position linePointTwo, Position robotLocation, Position &intersectionPoint);
 };
 

@@ -62,6 +62,7 @@ class Rabbit
         float throttle;
 
         float velocity;
+        ros::Time lastUpdateTime;
 
         RabbitState state;
 };

@@ -70,7 +70,21 @@ void Rabbit::changeSteering(float radian)
 
 void Rabbit::moveRabbit(const ros::TimerEvent& event)
 {
-    /** add code here **/
+    float deltaT = 0.1;
+    float tempThrottle = ((this->carrotPos.carrotDistance - (this->velocity * deltaT))*2) / (deltaT * deltaT); // s = ut + 1/2 at^2
+
+    if (this->carrotPos.carrotDistance <= MaximumDistanceFromRabbit)
+    {
+        tempThrottle *= -1;
+    }
+
+    tempThrottle /= 5.5;
+
+    this->throttle = tempThrottle;
+
+    publishSteering();
+    publishThrottle();
+
 }
 
 void Rabbit::publishSteering()
@@ -89,10 +103,25 @@ void Rabbit::publishThrottle()
 
 void Rabbit::callbackUpdateRabbitGPSLocation(const std_msgs::String::ConstPtr& rabbit)
 {
+    Position tempGPS;
     vector<string> temp = split(rabbit->data,',');
-    this->rabbit.x = atof(temp[0].c_str());;
-    this->rabbit.y = atof(temp[1].c_str());;
-    this->rabbit.z = atof(temp[2].c_str());;
+    tempGPS.x = atof(temp[0].c_str());;
+    tempGPS.y = atof(temp[1].c_str());;
+    tempGPS.z = atof(temp[2].c_str());;
+
+    temp distance = getEuclideanDistance(tempGPS,getRabbitPosition());
+    ros::Time time = ros::Time::now();
+    this->lastUpdateTime = ros::Time::now();
+    float totalTime = endTime.sec - time.sec;
+    int nsec = endTime.nsec - time.nsec;
+    if(nsec < 0)
+    {
+        totalTime -= 1;
+        nsec += 1000000000;
+    }
+    totalTime += (nsec/1000000000);
+
+    this->velocity = distance/totalTime;
 }
 
 void Rabbit::callbackUpdateRabbitIMULocation(const std_msgs::String::ConstPtr& rabbit)
