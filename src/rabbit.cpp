@@ -1,5 +1,5 @@
 /************************************
-* Robot description implementation  *
+* Rabbit description implementation  *
 *    for rabbit follow algorithm    *
 * Written for SWARATH Project       *
 * @author Nishant Sharma            *
@@ -7,10 +7,10 @@
 * @date 4, March, 2015              *
 ************************************/
 
-#include <rabbit_follow/robot.h>
+#include <rabbit_follow/rabbit.h>
 
 /** constructors **/
-Robot::Robot()
+Rabbit::Rabbit()
 {
     this->setXLocation(0);
     this->setYLocation(0);
@@ -20,7 +20,7 @@ Robot::Robot()
     this->setCarrotYLocation(0);
 }
 
-Robot::Robot(float x, float y, float radian, robotState state)
+Rabbit::Rabbit(float x, float y, float radian, RabbitState state)
 {
     this->setXLocation(x);
     this->setYLocation(y);
@@ -31,88 +31,88 @@ Robot::Robot(float x, float y, float radian, robotState state)
 }
 
 /** destructor **/
-Robot::~Robot()
+Rabbit::~Rabbit()
 {
     //dtor
 }
 
 /** get functions **/
 
-float Robot::getXLocation()
+float Rabbit::getXLocation()
 {
     return this->xLocation;
 }
 
-float Robot::getYLocation()
+float Rabbit::getYLocation()
 {
     return this->yLocation;
 }
 
-robotState Robot::getState()
+RabbitState Rabbit::getState()
 {
     return this->state;
 }
 
-float Robot::getDirection()
+float Rabbit::getDirection()
 {
     return this->direction;
 }
 
-float Robot::getCarrotXlocation()
+float Rabbit::getCarrotXlocation()
 {
     return this->carrotXLocation;
 }
 
-float Robot::getCarrotYlocation()
+float Rabbit::getCarrotYlocation()
 {
     return this->carrotYLocation;
 }
 
 /** set functions **/
 
-void Robot::setXLocation(float x)
+void Rabbit::setXLocation(float x)
 {
     this->xLocation = x;
 }
 
-void Robot::setYLocation(float y)
+void Rabbit::setYLocation(float y)
 {
     this->yLocation = y;
 }
 
-void Robot::setDirection(float radian)
+void Rabbit::setDirection(float radian)
 {
     this->direction = radian;
 }
 
-void Robot::setState(robotState state)
+void Rabbit::setState(RabbitState state)
 {
     this->state = state;
 }
 
-void Robot::setCarrotXLocation(float x)
+void Rabbit::setCarrotXLocation(float x)
 {
     this->carrotXLocation = x;
 }
 
-void Robot::setCarrotYLocation(float y)
+void Rabbit::setCarrotYLocation(float y)
 {
     this->carrotYLocation = y;
 }
 
 /** modifier functions **/
 
-void Robot::changeDirection(float radian)
+void Rabbit::changeDirection(float radian)
 {
     this->direction += radian;
 }
 
-void Robot::moveRobot()
+void Rabbit::moveRabbit()
 {
     /** add code here **/
 }
 
-void Robot::updateState()
+void Rabbit::updateState()
 {
     /** add code here **/
 }
@@ -127,15 +127,15 @@ void publishSteering()
     /** add code here **/
 }
 
-void Robot::callbackUpdateRobotLocation(const geometry_msgs::Point::ConstPtr& robot)
+void Rabbit::callbackUpdateRabbitLocation(const geometry_msgs::Point::ConstPtr& rabbit)
 {
-    float radian = atan2(robot->y - this->getYLocation(),robot->x - this->getXLocation());
-    this->setXLocation(robot->x);
-    this->setYLocation(robot->y);
+    float radian = atan2(rabbit->y - this->getYLocation(),rabbit->x - this->getXLocation());
+    this->setXLocation(rabbit->x);
+    this->setYLocation(rabbit->y);
     this->setDirection(radian);
 }
 
-void Robot::callbackUpdateCarrotLocation(const geometry_msgs::Point::ConstPtr& carrot)
+void Rabbit::callbackUpdateCarrotLocation(const geometry_msgs::Point::ConstPtr& carrot)
 {
     this->setCarrotXLocation(carrot->x);
     this->setCarrotYLocation(carrot->y);

@@ -1,32 +1,32 @@
 /******************************************************
-* Robot description file for rabbit follow algorithm  *
+* Rabbit description file for rabbit follow algorithm  *
 * Written for SWARATH Project                         *
 * @author Nishant Sharma                              *
 * @version 0.0                                        *
 * @date 4, March, 2015                                *
 ******************************************************/
 
-#ifndef ROBOT_H
-#define ROBOT_H
+#ifndef Rabbit_H
+#define Rabbit_H
 
 #include <geometry_msgs/Point.h>
 
-enum robotState{followingCarrot, reachedEnd};
+enum RabbitState{followingCarrot, reachedEnd};
 
-class Robot
+class Rabbit
 {
     public:
         /** Default constructor */
-        Robot();
-        Robot(float x, float y, float radian, robotState state);
+        Rabbit();
+        Rabbit(float x, float y, float radian, RabbitState state);
 
         /** Default destructor */
-        virtual ~Robot();
+        virtual ~Rabbit();
 
         /** get functions **/
         float getXLocation();
         float getYLocation();
-        robotState getState();
+        RabbitState getState();
         float getDirection();
         float getCarrotXlocation();
         float getCarrotYlocation();
@@ -35,19 +35,19 @@ class Robot
         void setXLocation(float x);
         void setYLocation(float y);
         void setDirection(float radian);
-        void setState(robotState state);
+        void setState(RabbitState state);
         void setCarrotXLocation(float x);
         void setCarrotYLocation(float y);
 
         /** modifier functions **/
         void changeDirection(float radian);
-        void moveRobot();
+        void moveRabbit();
         void updateState();
 
         void publishThrottle();
         void publishSteering();
 
-        void callbackUpdateRobotLocation(const geometry_msgs::Point::ConstPtr& robot);
+        void callbackUpdateRabbitLocation(const geometry_msgs::Point::ConstPtr& rabbit);
         void callbackUpdateCarrotLocation(const geometry_msgs::Point::ConstPtr& carrot);
 
     protected:
@@ -57,7 +57,7 @@ class Robot
         float carrotXLocation;
         float carrotYLocation;
         float direction;
-        robotState state;
+        RabbitState state;
 };
 
-#endif // ROBOT_H
+#endif // Rabbit_H
