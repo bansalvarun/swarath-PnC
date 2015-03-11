@@ -104,7 +104,14 @@ void Rabbit::setCarrotYLocation(float y)
 
 void Rabbit::changeDirection(float radian)
 {
-    this->direction += radian;
+    temp=this->direction;
+    temp=temp*((7*M_PI/45));
+    
+    radian=(radian+(38*M_PI/45))%38*M_PI/45;
+    radian=radian-temp;
+    radian=radian/((7*M_PI/45));
+    this->direction=radian;
+    
 }
 
 void Rabbit::moveRabbit()
