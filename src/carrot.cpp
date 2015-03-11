@@ -65,7 +65,20 @@ void Carrot::setState(CarrotState state)
     this->state = state;
 }
 
-void rabbitLocationUpdated(bool state);
+void Carrot::rabbitLocationUpdated(bool state)
+{
+	this->rabbitLocationUpdate = state;
+}
+
+void Carrot::incrementCurrentWayPointID()
+{
+	this->currentWayPointID+=1;
+}
+
+void setCurrentWayPointID(int id)
+{
+	this->currentWayPointID=id;
+}
 
 /** modifier functions **/
 void Carrot::changeHeadingAngle(float radian)
@@ -76,7 +89,7 @@ void Carrot::changeHeadingAngle(float radian)
 
 void Carrot::moveCarrot()
 {
-    getLineIntersection()
+    
 }
 
 void Carrot::updateState()
