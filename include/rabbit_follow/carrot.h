@@ -32,7 +32,6 @@ class Carrot
         Position getCarrotLocation();
         Position getRabbitLocation();
         CarrotState getState();
-        float getHeadingAngle();
         Position getWayPoint(int id);
         bool isRabbitLocationUpdated();
         int getCurrentWayPointID();
@@ -40,14 +39,12 @@ class Carrot
         /** set functions **/
         void setCarrotLocation(Position carrot);
         void setRabbitLocation(Position rabbit);
-        void setHeadingAngle(float radian);
         void setState(CarrotState state);
         void rabbitLocationUpdated(bool state);
         void incrementCurrentWayPointID();
         void setCurrentWayPointID(int id);
 
         /** modifier functions **/
-        void changeHeadingAngle(float radian);
         void moveCarrot();
         void updateState();
 
