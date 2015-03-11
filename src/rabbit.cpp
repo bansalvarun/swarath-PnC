@@ -90,8 +90,9 @@ void Rabbit::updateState()
 }
 
 
-void Rabbit::callbackUpdateRabbitLocation(const geometry_msgs::Point::ConstPtr& rabbit)
+void Rabbit::callbackUpdateRabbitGPSLocation(const geometry_msgs::Point::ConstPtr& rabbit)
 {
+
     float radian = atan2(rabbit->y - this->getYLocation(),rabbit->x - this->getXLocation());
     this->setXLocation(rabbit->x);
     this->setYLocation(rabbit->y);

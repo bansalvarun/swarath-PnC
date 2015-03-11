@@ -78,7 +78,7 @@ void Carrot::setCarrotRabbitPosition(float distance, float direction)
 
 
 /** modifier functions **/
-void Carrot::moveCarrot()
+void Carrot::moveCarrot(const ros::TimerEvent& event)
 {
     float crDirection;
     if(getState() == ReachedEnd)
@@ -115,18 +115,20 @@ void Carrot::moveCarrot()
     	float crDistance=getEuclideanDistance(getRabbitLocation(), getCarrotLocation());
         setCarrotRabbitPosition(crDistance, crDirection);
     }
+    publishCarrotPosition();
 }
-//
-//void Carrot::updateState()
-//{
-//
-//}
 
-void Carrot::callbackUpdateRabbitLocation(const geometry_msgs::Point::ConstPtr& rabbitMsg)
+void Carrot::publishCarrotPosition()
 {
-    this->rabbit.x = rabbitMsg->x;
-    this->rabbit.y = rabbitMsg->y;
-    this->rabbit.z = rabbitMsg->z;
+    this->publisher_carrot_robot.publish(carrotPos);
+}
+
+void Carrot::callbackUpdateRabbitLocation(const std_msgs::String::ConstPtr& rabbit)
+{
+    vector<string> temp = split(rabbit->data,',');
+    this->rabbit.x = atof(temp[0].c_str());;
+    this->rabbit.y = atof(temp[1].c_str());;
+    this->rabbit.z = atof(temp[2].c_str());;
 }
 
 void Carrot::readWayPointsFromFile(string filename)

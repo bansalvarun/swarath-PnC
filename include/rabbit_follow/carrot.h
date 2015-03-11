@@ -9,7 +9,9 @@
 #ifndef CARROT_H
 #define CARROT_H
 
+#include <ros/ros.h>
 #include <geometry_msgs/Point.h>
+#include <std_msgs/String.h>
 #include "rabbit_follow/GlobalDeclaration.h"
 #include <rabbit_follow/carrotPosition.h>
 #include <vector>
@@ -43,13 +45,16 @@ class Carrot
         void incrementCurrentWayPointID();
         void setCurrentWayPointID(int id);
         void setCarrotRabbitPosition(float distance, float direction);
-        /** modifier functions **/
-        void moveCarrot();
-//        void updateState();
 
-        void callbackUpdateRabbitLocation(const geometry_msgs::Point::ConstPtr& rabbit);
+        /** modifier functions **/
+        void moveCarrot(const ros::TimerEvent& event);
+        void publishCarrotPosition();
+
+        void callbackUpdateRabbitLocation(const std_msgs::String::ConstPtr& rabbit);
 
         void readWayPointsFromFile(string filename);
+
+        ros::Publisher publisher_carrot_robot;
 
     protected:
     private:

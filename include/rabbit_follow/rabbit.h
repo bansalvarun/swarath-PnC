@@ -41,8 +41,8 @@ class Rabbit
         void moveRabbit(const ros::TimerEvent& event);
         void updateState();
 
-        void callbackUpdateRabbitGPSLocation(const geometry_msgs::Point::ConstPtr& rabbit);
-        void callbackUpdateRabbitIMULocation(const geometry_msgs::Point::ConstPtr& rabbit);
+        void callbackUpdateRabbitGPSLocation(const std_msgs::String::ConstPtr& rabbit);
+        void callbackUpdateRabbitIMULocation(const std_msgs::String::ConstPtr& rabbit);
         void callbackUpdateCarrotLocation(const rabbit_follow::carrotPosition::ConstPtr& carrot);
 
         ros::Publisher steer_pub;
