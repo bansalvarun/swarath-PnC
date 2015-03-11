@@ -9,6 +9,7 @@
 #include <ros/ros.h>
 #include <visualization_msgs/Marker.h>
 #include <rabbit_follow/rabbit.h>
+#include <std_msgs/String.h>
 #include <cmath>
 #include <vector>
 
@@ -40,14 +41,26 @@ int main (int argc,char** argv)
 
     Rabbit rabbit;
 
-//    ros::Publisher marker_pub = n.advertise<visualization_msgs::Marker>("rabbit_follow",10);
-    ros::Subscriber sub = n.subscribe("rabbit_location_update", 1000, &Rabbit::callbackUpdateRabbitLocation, &rabbit);
-  //  visualization_msgs::Marker rabbitOne;
+    ros::Publisher steer_pub = n.advertise<visualization_msgs::Marker>("steering_unity",10);
+    ros::Publisher throttle_pub = n.advertise<visualization_msgs::Marker>("throttle_unity",10);
+
+    ros::Subscriber sub = n.subscribe("carrot_location_update", 1000, &Rabbit::callbackUpdateRabbitLocation, &rabbit);
+    ros::Subscriber sub = n.subscribe("gps_unity", 1000, &Rabbit::callbackUpdateRabbitLocation, &rabbit);
+    ros::Subscriber sub = n.subscribe("imu_unity", 1000, &Rabbit::callbackUpdateRabbitLocation, &rabbit);
+
+    visualization_msgs::Marker rabbitMarker;
+    initializeMarkers(rabbitMarker);
+
+    while (ros::ok())
+    {
+        ros::spinOnce();
+        rabbit.moveRabbit();
+        steer_pub.publish(to_string(rabbit.getDirection()));
+
+        //
+        //
 
 
-   // while (ros::ok())
-    //{
-      //  ros::spinOnce();
-    //}
+    }
 
 }

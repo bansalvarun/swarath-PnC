@@ -7,6 +7,7 @@ project(rabbit_follow)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
+  generate_messages
 )
 
 ## System dependencies are found with CMake's conventions

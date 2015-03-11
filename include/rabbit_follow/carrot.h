@@ -10,18 +10,12 @@
 #define CARROT_H
 
 #include <geometry_msgs/Point.h>
+#include <rabbit_follow/GlobalDeclaration.h>
 #include <vector>
 
 using namespace std;
 
 enum CarrotState{MovingOnLine, ReachedWaypoint, ReachedEnd};
-
-struct Position
-{
-    float x;
-    float y;
-    float z;
-};
 
 class Carrot
 {
@@ -65,12 +59,19 @@ class Carrot
     private:
 
         vector <Position> wayPointPath;
+
         bool rabbitLocationUpdate;
+
         Position carrot;
         Position rabbit;
+
         float carrotHeadingAngle;
+        float carrotRabbitDistance;
+
         CarrotState state;
+
         int currentWayPointID;
+
         float getEuclideanDistance(Position one, Position two);
         void getLineIntersection(Position linePointOne, Position linePointTwo, Position robotLocation, Position &intersectionPoint);
 };

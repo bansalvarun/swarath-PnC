@@ -1,0 +1,2 @@
+float64 carrotDistance
+float64 carrotDirection

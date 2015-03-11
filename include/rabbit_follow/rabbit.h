@@ -10,6 +10,7 @@
 #define Rabbit_H
 
 #include <geometry_msgs/Point.h>
+#include <rabbit_follow/GlobalDeclaration.h>
 
 enum RabbitState{followingCarrot, reachedEnd};
 
@@ -24,10 +25,9 @@ class Rabbit
         virtual ~Rabbit();
 
         /** get functions **/
-        float getXLocation();
-        float getYLocation();
+        float getRabbitPosition();
         RabbitState getState();
-        float getDirection();
+        float getSteering();
         float getCarrotXlocation();
         float getCarrotYlocation();
 
@@ -52,11 +52,12 @@ class Rabbit
 
     protected:
     private:
-        float xLocation;
-        float yLocation;
-        float carrotXLocation;
-        float carrotYLocation;
-        float direction;
+
+        Position rabbit;
+        float carrotDirection;
+        float carrotDistance;
+        float steering;
+        float throttle;
         RabbitState state;
 };
 
