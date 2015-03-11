@@ -90,23 +90,34 @@ void Carrot::changeHeadingAngle(float radian)
 
 void Carrot::moveCarrot()
 {
-    Position intersectionPoint;
-    getLineIntersection(getWayPoint(currentWayPointID), getWayPoint(currentWayPointID-1), getRabbitLocation(), intersectionPoint);
-    if(getState==ReachedEnd)
+    
+    if(getState()==ReachedEnd)
     {
     	return;
     }
-    else if(getState==ReachedWaypoint)
-    {
-    	if(getEuclideanDistance(getRabbitLocation(), getWayPoint(currentWayPointID))<1)
+    else if(getState()==ReachedWaypoint)
+    {   float crDistance;
+		crDistance=getEuclideanDistance(getRabbitLocation(), getCarrotLocation(currentWayPointID))
+		setCarrotRabbitDistance(crDistance);
+    	if(crDistance<1)
     		setState(MovingOnLine);
     }
     else
     {
+    	Position intersectionPoint;
+    	float dist,dist1;
+    	getLineIntersection(getWayPoint(currentWayPointID), getWayPoint(currentWayPointID-1), getRabbitLocation(), intersectionPoint);
     	carrotHeadingAngle = atan2(getWayPoint(currentWayPointID).y-getWayPoint(currentWayPointID-1).y,getWayPoint(currentWayPointID).x-getWayPoint(currentWayPointID-1).x);
     	Position temp;
     	temp.x = intersectionPoint.x + ((MaximumDistanceFromRabbit) * cos(carrotHeadingAngle));
     	temp.y = intersectionPoint.y + ((MaximumDistanceFromRabbit) * sin(carrotHeadingAngle));
+    	dist=getEuclideanDistance(temp, getWayPoint(currentWayPointID-1))
+    	dist1=getEuclideanDistance(getWayPoint(currentWayPointID-1), getWayPoint(currentWayPointID))
+    	if (dist > dist1)
+    	{
+    	    carrot=getWayPoint(currentWayPointID);
+    	    
+    	}  
     	
     }
 
