@@ -23,7 +23,7 @@ int main (int argc,char** argv)
     ros::Subscriber sub1 = n.subscribe("carrot_location_update", 1000, &Rabbit::callbackUpdateCarrotLocation, &rabbit);
     ros::Subscriber sub2 = n.subscribe("gps_unity", 1000, &Rabbit::callbackUpdateRabbitGPSLocation, &rabbit);
     ros::Subscriber sub3 = n.subscribe("imu_unity", 1000, &Rabbit::callbackUpdateRabbitIMULocation, &rabbit);
-
+	ros::Duration(1).sleep();
     ros::Timer timer = n.createTimer(ros::Duration(0.1), &Rabbit::moveRabbit, &rabbit);
     ros::spin();
 }

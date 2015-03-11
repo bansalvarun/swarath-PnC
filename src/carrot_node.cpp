@@ -17,7 +17,7 @@ int main (int argc,char** argv)
 
     carrot.publisher_carrot_robot = n.advertise<rabbit_follow::carrotPosition>("carrot_location_update",10);
     ros::Subscriber sub = n.subscribe("gps_unity", 1000, &Carrot::callbackUpdateRabbitLocation, &carrot);
-
+	ros::Duration(1).sleep();
     ros::Timer timer = n.createTimer(ros::Duration(0.1),&Carrot::moveCarrot, &carrot);
 
     ros::spin();

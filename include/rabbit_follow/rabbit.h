@@ -55,7 +55,7 @@ class Rabbit
     private:
 
         Position rabbit;
-
+        float currentHeading;
         rabbit_follow::carrotPosition carrotPos;
 
         float steering;

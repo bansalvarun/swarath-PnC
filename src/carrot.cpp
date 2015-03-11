@@ -6,9 +6,9 @@
 Carrot::Carrot(string filename)
 {
     this->readWayPointsFromFile(filename);
-    this->carrot.x = this->getWayPoint(0).x;
-    this->carrot.z = this->getWayPoint(0).z;
-    this->currentWayPointID=0;
+    this->carrot.x = 0;
+    this->carrot.z = 0;
+    this->currentWayPointID=1;
     this->state = MovingOnLine;
 }
 
@@ -83,10 +83,12 @@ void Carrot::moveCarrot(const ros::TimerEvent& event)
     float crDirection;
     if(getState() == ReachedEnd)
     {
+		//ROS_INFO("reachedEnd");
     	return;
     }
     else if(getState() == ReachedWaypoint)
     {
+		//ROS_INFO("reachedPoint");
 		float crDistance=getEuclideanDistance(getRabbitLocation(), getCarrotLocation());
     	if(crDistance<1)
     		setState(MovingOnLine);
@@ -100,7 +102,8 @@ void Carrot::moveCarrot(const ros::TimerEvent& event)
     {
     	Position intersectionPoint;
     	float dist,dist1;
-    	getLineIntersection(getWayPoint(currentWayPointID), getWayPoint(currentWayPointID-1), getRabbitLocation(), intersectionPoint);
+    	getLineIntersection(getWayPoint(currentWayPointID-1), getWayPoint(currentWayPointID), getRabbitLocation(), intersectionPoint);
+    	//ROS_INFO("intersectionPoint %f || %f",intersectionPoint.x, intersectionPoint.z);
     	float carrotHeadingAngle = atan2(getWayPoint(currentWayPointID).z-getWayPoint(currentWayPointID-1).z,getWayPoint(currentWayPointID).x-getWayPoint(currentWayPointID-1).x);
     	Position temp;
     	temp.x = intersectionPoint.x + ((MaximumDistanceFromRabbit) * cos(carrotHeadingAngle));
@@ -110,16 +113,21 @@ void Carrot::moveCarrot(const ros::TimerEvent& event)
     	if (dist > dist1)
     	{
     	    carrot=getWayPoint(currentWayPointID);
+    	    setState(ReachedWaypoint);
+    	    incrementCurrentWayPointID();
     	}
+    	carrot = temp;
     	crDirection = atan2(getCarrotLocation().z - getRabbitLocation().z, getCarrotLocation().x - getRabbitLocation().x);
     	float crDistance=getEuclideanDistance(getRabbitLocation(), getCarrotLocation());
         setCarrotRabbitPosition(crDistance, crDirection);
+        //ROS_INFO("update| dist %f, direc %f",carrotPos.carrotDistance, carrotPos.carrotDirection);
     }
     publishCarrotPosition();
 }
 
 void Carrot::publishCarrotPosition()
 {
+	//ROS_INFO("before pub| dist %f, direc %f",carrotPos.carrotDistance, carrotPos.carrotDirection);
     this->publisher_carrot_robot.publish(carrotPos);
 }
 
@@ -129,6 +137,7 @@ void Carrot::callbackUpdateRabbitLocation(const std_msgs::String::ConstPtr& rabb
     this->rabbit.x = atof(temp[0].c_str());;
     this->rabbit.y = atof(temp[1].c_str());;
     this->rabbit.z = atof(temp[2].c_str());;
+	//ROS_INFO("rabbitupdate %f || %f || %s",this->rabbit.x, this->rabbit.z,temp[0].c_str());
 }
 
 void Carrot::readWayPointsFromFile(string filename)
@@ -145,8 +154,9 @@ void Carrot::readWayPointsFromFile(string filename)
             vector<string> temp = split(line,',');
             position.x = atof(temp[0].c_str());
             position.y = atof(temp[1].c_str());
-            position.z = atof(temp[1].c_str());
+            position.z = atof(temp[2].c_str());
             this->wayPointPath.push_back(position);
+			//ROS_INFO("READ %f || %f",position.x, position.z);
         }
         myfile.close();
     }
