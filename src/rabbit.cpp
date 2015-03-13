@@ -1,18 +1,18 @@
-/************************************
+/*************************************
 * Rabbit description implementation  *
-*    for rabbit follow algorithm    *
-* Written for SWARATH Project       *
-* @author Nishant Sharma            *
-* @version 0.0                      *
-* @date 4, March, 2015              *
-************************************/
+*    for rabbit follow algorithm     *
+* Written for SWARATH Project        *
+* @author Nishant Sharma             *
+* @version 1.1                       *
+* @date 13, March, 2015              *
+*************************************/
 
 #include <rabbit_follow/rabbit.h>
 
 /** constructors **/
 Rabbit::Rabbit()
 {
-    this->setState(followingCarrot);
+    this->rabbitState = FollowingCarrot;
 }
 
 /** destructor **/
@@ -23,154 +23,244 @@ Rabbit::~Rabbit()
 
 /** get functions **/
 
-Position Rabbit::getRabbitPosition()
-{
-    return this->rabbit;
-}
-
-RabbitState Rabbit::getState()
-{
-    return this->state;
-}
-
-float Rabbit::getSteering()
-{
-    return this->steering;
-}
-
-float Rabbit::getThrottle()
-{
-    return this->throttle;
-}
+//Position Rabbit::getRabbitPosition()
+//{
+//    return this->rabbit;
+//}
+//
+//RabbitState Rabbit::getState()
+//{
+//    return this->state;
+//}
+//
+//float Rabbit::getSteering()
+//{
+//    return this->steering;
+//}
+//
+//float Rabbit::getThrottle()
+//{
+//    return this->throttle;
+//}
 
 /** set functions **/
 
-void Rabbit::setRabbitPosition(Position rabbit)
-{
-    this->rabbit = rabbit;
-}
-
-void Rabbit::setState(RabbitState state)
-{
-    this->state = state;
-}
+//void Rabbit::setRabbitPosition(Position rabbit)
+//{
+//    this->rabbit = rabbit;
+//}
+//
+//void Rabbit::setState(RabbitState state)
+//{
+//    this->state = state;
+//}
 
 /** modifier functions **/
 
-void Rabbit::changeSteering(float radian)
+void Rabbit::MoveRabbit(const ros::TimerEvent& event)
 {
-    float temp=this->currentHeading;
-    temp=(temp*M_PI)/180;
-    if (temp>M_PI)
-    temp=temp-M_PI;
-    float radian_1=radian+temp;
-    if (radian_1>M_PI)
-    radian_1=radian-temp-M_PI;
 
+#ifdef debugRabbit
+    ROS_INFO("Entering Move Rabbit Function");
+#endif // debugRabbit
 
+    CalculateVelocity(this->rabbit);
+	UpdateSteering();
+    UpdateThrottle();
+    PublishSteering();
+    PublishThrottle();
 
-
-
-//    //temp=fmod(temp+(38*(M_PI/45)),38 * (M_PI/45));
-//
-    //radian=radian/M_PI;
-
-    //radian = fmod(radian+(38*(M_PI/45)),7 * (M_PI/45));
-    //radian=radian-temp;
-    //ROS_INFO("steering %f",radian * 180 / M_PI);
-    if (radian_1 >  (7*M_PI/45)) radian_1=(7*M_PI/45);
-    else if (radian < - (7*M_PI/45)) radian =-(7*M_PI/45);
-
-    radian_1=radian_1/((7*M_PI/45));
-    ROS_INFO("steering %f",radian_1); //This is not getting printed which means this function isnot being called properly
-    //if(radian > 1) radian = 1;
-    //if(radian < -1) radian = -1;
-    this->steering=-radian_1;
-}
-
-void Rabbit::moveRabbit(const ros::TimerEvent& event)
-{
-	changeSteering(this->carrotPos.carrotDirection);
-    float deltaT = 0.1;
-    float tempThrottle = ((this->carrotPos.carrotDistance - (this->velocity * deltaT))*2) / (deltaT * deltaT); // s = ut + 1/2 at^2
-
-	ROS_INFO("tempTh %f, velocity %f",tempThrottle, velocity);
-
-    if (this->carrotPos.carrotDistance <= MaximumDistanceFromRabbit)
-    {
-        tempThrottle *= -1;
-    }
-
-    tempThrottle /= 55000;
-
-    this->throttle = tempThrottle;
-
-
-	//ROS_INFO("tempTh %f, velocity %f",tempThrottle, velocity);
-
-    publishSteering();
-    publishThrottle();
+#ifdef debugRabbit
+    ROS_INFO("Exiting Move Rabbit Function");
+#endif // debugRabbit
 
 }
 
-void Rabbit::publishSteering()
+void Rabbit::CallbackUpdateRabbitGPSLocation(const std_msgs::String::ConstPtr& rabbit)
 {
-    std_msgs::String temp;
-    temp.data = floatToString(this->getSteering());
-    steer_publisher.publish(temp);
-}
 
-void Rabbit::publishThrottle()
-{
-    std_msgs::String temp;
-    temp.data = floatToString(this->getThrottle());
-    throttle_publisher.publish(temp);
-}
+#ifdef debugRabbit
+    ROS_INFO("Entering Callback Update Rabbit GPS Location Function");
+#endif // debugRabbit
 
-int counter =50;
-
-void Rabbit::callbackUpdateRabbitGPSLocation(const std_msgs::String::ConstPtr& rabbit)
-{
-    counter++;
-    Position tempGPS;
+    Position newRabbitGPSLocation;
     vector<string> temp = split(rabbit->data,',');
-    tempGPS.x = atof(temp[0].c_str());;
-    tempGPS.y = atof(temp[1].c_str());;
-    tempGPS.z = atof(temp[2].c_str());;
+    newRabbitGPSLocation.x = atof(temp[0].c_str());;
+    newRabbitGPSLocation.y = atof(temp[1].c_str());;
+    newRabbitGPSLocation.z = atof(temp[2].c_str());;
+    this->rabbit = newRabbitGPSLocation;
 
-    float distance = getEuclideanDistance(tempGPS,getRabbitPosition());
-    ros::Time time = ros::Time::now();
+#ifdef debugRabbit
+    ROS_INFO("Robot New Location: x = %f, y = %f, z = %f", this->rabbit.x, this->rabbit.y, this->rabbit.z);
+#endif // debugRabbit
 
-    float totalTime = lastUpdateTime.sec - time.sec;
-    int nsec = lastUpdateTime.nsec - time.nsec;
-    if(nsec < 0)
-    {
-        totalTime -= 1;
-        nsec += 1000000000;
-    }
-    totalTime += (nsec/1000000000.0);
-//    if (counter > 12)
-//    {
-//        this->currentHeading = atan2((int)tempGPS.x - (int)this->rabbit.x,(int)tempGPS.z - (int)this->rabbit.z);
-//        ROS_INFO("direct %f",this->currentHeading);
-//        counter =0;
-//    }
-    this->velocity = distance/totalTime;
-    this->rabbit = tempGPS;
-    this->lastUpdateTime = ros::Time::now();
+#ifdef debugRabbit
+    ROS_INFO("Exiting Callback Update Rabbit GPS Location Function");
+#endif // debugRabbit
+
 }
 
-void Rabbit::callbackUpdateRabbitIMULocation(const std_msgs::String::ConstPtr& rabbit)
+void Rabbit::CallbackUpdateRabbitIMULocation(const std_msgs::String::ConstPtr& rabbit)
 {
     vector<string> temp = split(rabbit->data,',');
-    this->currentHeading = atof(temp[1].c_str());
-//    this->steering -= 180;
-//    ROS_INFO("direct %f",this->steering);
-//    this->steering *= M_PI / 180; //already set = no change
+    this->rabbitCurrentHeading = atof(temp[1].c_str());
+
+#ifdef debugRabbit
+    ROS_INFO("Current Updated Rabbit Heading is %f", this->rabbitCurrentHeading);
+#endif // debugRabbit
+
 }
 
-void Rabbit::callbackUpdateCarrotLocation(const rabbit_follow::carrotPosition::ConstPtr& carrot)
+void Rabbit::CallbackUpdateCarrotLocation(const rabbit_follow::carrotPosition::ConstPtr& carrot)
 {
-    this->carrotPos.carrotDistance  = carrot->carrotDistance;
-    this->carrotPos.carrotDirection = carrot->carrotDirection;
+    this->carrotPosition.carrotDistance  = carrot->carrotDistance;
+    this->carrotPosition.carrotDirection = carrot->carrotDirection;
+
+#ifdef debugRabbit
+    ROS_INFO("Carrot Distance = %f, Carrot Direction = %f", this->carrotPosition.carrotDistance, this->carrotPosition.carrotDirection);
+#endif // debugRabbit
+
 }
+
+
+void Rabbit::UpdateSteering()
+{
+
+#ifdef debugRabbit
+    ROS_INFO("Entering Update Steering Method");
+#endif // debugRabbit
+
+    /** set desired and current heading **/
+    float desiredHeading = this->carrotPosition.carrotDirection;
+    float currentHeading = this->rabbitCurrentHeading;
+
+    /** convert current heading from degrees to radians **/
+    currentHeading = ToRadians(currentHeading);
+
+#ifdef debugRabbit
+    ROS_INFO("Desired heading = %f (rad), current Heading = %f (rad)");
+#endif // debugRabbit
+
+    /** if current heading is greater than PI then subtract 2 PI to make come in the range -pi to 0**/
+    if(currentHeading>M_PI)
+        currentHeading=currentHeading - (M_PI * 2);
+
+    /** setting required turning angle **/
+    float requiredTurningAngle = desiredHeading + currentHeading;
+    if(requiredTurningAngle > M_PI)
+        requiredTurningAngle = desiredHeading - currentHeading - M_PI;
+
+    /** bring down required turn angle in the range -maximumAllowedTurn to maximumAllowedTurn **/
+    if(requiredTurningAngle >  MaximumAllowedTurnValue)
+    {
+        requiredTurningAngle = MaximumAllowedTurnValue;
+    }
+    else if(requiredTurningAngle < ( -1 * MaximumAllowedTurnValue))
+    {
+        requiredTurningAngle = -1 * MaximumAllowedTurnValue;
+    }
+
+    /** normalizing the turn from -1 to 1 **/
+    requiredTurningAngle = requiredTurningAngle / MaximumAllowedTurnValue;
+
+    this->steering = -1 * requiredTurningAngle;
+
+#ifdef debugRabbit
+    ROS_INFO("Updated Steering = %f", this->steering);
+#endif // debugRabbit
+
+#ifdef debugRabbit
+    ROS_INFO("Exiting Update Steering Method");
+#endif // debugRabbit
+}
+
+void Rabbit::UpdateThrottle()
+{
+
+#ifdef debugRabbit
+    ROS_INFO("Entering Update Throttle Function");
+#endif // debugRabbit
+
+    this->throttle = 0.3;
+
+#ifdef debugRabbit
+    ROS_INFO("Exiting Update Throttle Function");
+#endif // debugRabbit
+
+}
+
+void Rabbit::CalculateVelocity(Position position)
+{
+
+#ifdef debugRabbit
+    ROS_INFO("Entering Calculate Veloocity Function");
+#endif // debugRabbit
+
+    /** get displacement between robot's last and current location **/
+    float displacement = GetEuclideanDistance(position, this->rabbitLastLocation);
+
+#ifdef debugRabbit
+    ROS_INFO("displacement = %f", displacement);
+#endif // debugRabbit
+
+    /**
+        get current time
+        get difference between last update time and current time
+    **/
+    ros::Time currentTime = ros::Time::now();
+    float totalTimeElapsed = this->lastVelocityUpdateTime.sec - currentTime.sec;
+    float nanoSeconds = this->lastVelocityUpdateTime.nsec - currentTime.nsec;
+    if(nanoSeconds < 0)
+    {
+        totalTimeElapsed -= 1;
+        nanoSeconds += NanoSecondsInOneSecond;
+    }
+    totalTimeElapsed += (nanoSeconds / NanoSecondsInOneSecond);
+
+#ifdef debugRabbit
+    ROS_INFO("time elapsed = %f", totalTimeElapsed);
+#endif // debugRabbit
+
+    /** velocity is displacemnt upon time **/
+    this->currentVelocity = displacement / totalTimeElapsed;
+
+#ifdef debugRabbit
+    ROS_INFO("calculated Velocity = %f", this->currentVelocity);
+#endif // debugRabbit
+
+    /** updating last update time and rabbit last location **/
+    this->lastVelocityUpdateTime = currentTime;
+    this->rabbitLastLocation = position;
+
+#ifdef debugRabbit
+    ROS_INFO("Exiting Calculate velocity function");
+#endif // debugRabbit
+
+}
+
+void Rabbit::PublishSteering()
+{
+    std_msgs::String steeringMessage;
+    steeringMessage.data = floatToString(this->steering);
+    steer_publisher.publish(steeringMessage);
+
+#ifdef debugRabbit
+    ROS_INFO("Publishing Steering to Unity");
+#endif // debugRabbit
+
+}
+
+void Rabbit::PublishThrottle()
+{
+    std_msgs::String throttleMessage;
+    throttleMessage.data = floatToString(this->throttle);
+    throttle_publisher.publish(throttleMessage);
+
+#ifdef debugRabbit
+    ROS_INFO("Publishing Steering to Unity");
+#endif // debugRabbit
+
+}
+
+
+

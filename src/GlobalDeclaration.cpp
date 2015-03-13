@@ -1,5 +1,7 @@
 #include "rabbit_follow/GlobalDeclaration.h"
 #include <cmath>
+
+
 std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems) {
     std::stringstream ss(s);
     std::string item;
@@ -32,4 +34,14 @@ float GetEuclideanDistance(Position one, Position two)
 float GetAngle(Position destination, Position source)
 {
     return atan2(destination.z - source.z , destination.x - source.x);
+}
+
+float ToRadians(float degrees)
+{
+    return degrees * M_PI / 180;
+}
+
+float ToDegrees(float radians)
+{
+    return radians * 180 / M_PI;
 }

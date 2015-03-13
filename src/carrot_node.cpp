@@ -39,7 +39,7 @@ int main (int passedArgumentCount,char** passedArgumentValues)
     carrot.publisher_carrot_robot = nodeHandle.advertise<rabbit_follow::carrotPosition>("carrot_location_update",10);
 
     //initializing subscriber for updating rabbit location
-    ros::Subscriber sub = nodeHandle.subscribe("gps_unity", 1000, &Carrot::CallbackUpdateRabbitLocation, &carrot);
+    ros::Subscriber subscriber = nodeHandle.subscribe("gps_unity", 1000, &Carrot::CallbackUpdateRabbitLocation, &carrot);
 
 	//sleep to let code register punlisher and subscribers
 	ros::Duration(1).sleep();

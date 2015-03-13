@@ -31,50 +31,13 @@ class Carrot
         /** Default destructor */
         virtual ~Carrot();
 
-        /** get functions **/
-        //Position getCarrotLocation();
-        //Position getRabbitLocation();
-        //CarrotState getState();
-
-        /** returns one waypoint form the waypoint path **/
-        Position GetWayPoint(int index);
-
-        /** return index of the current waypoint **/
-        int GetCurrentWayPointID();
-
-        /** set functions **/
-        //void setCarrotLocation(Position carrot);
-        //void setRabbitLocation(Position rabbit);
-        //void setState(CarrotState state);
-
-        /** increments the followed waypoint index to the next waypoint **/
-        void IncrementCurrentWayPointID();
-
-        /** to reset the current way point index to a specific value **/
-        void SetCurrentWayPointID(int index);
-
-        /** to set the carrot's distance and direction from the robot **/
-        void SetCarrotRabbitPosition(float distance, float direction);
-
         /** modifier functions **/
-
-        /** carrot behaviour when on a waypoint **/
-        void UpdateCarrotWhenReachedWaypoint();
-
-        /** carrot behaviour when on a line **/
-        void UpdateCarrotWhenMovingOnLine();
 
         /** Main algorithm for maving carrot on the waypoint course**/
         void MoveCarrot(const ros::TimerEvent& event);
 
-        /** function for publishing carrot distance and direction to the rabbit node**/
-        void PublishCarrotPosition();
-
         /** ros callback function for updating rabbit location**/
         void CallbackUpdateRabbitLocation(const std_msgs::String::ConstPtr& rabbitLocation);
-
-        /** Read WayPoints information from a File **/
-        void ReadWayPointsFromFile(char* filename);
 
         /** "publisher_carrot_robot" -> left public for ROS instantiation **/
         ros::Publisher publisher_carrot_robot;
@@ -100,6 +63,39 @@ class Carrot
 
         /** member for storing the current waypoint that's is being followed **/
         int currentWayPointID;
+
+        /** get functions **/
+
+        /** returns one waypoint form the waypoint path **/
+        Position GetWayPoint(int index);
+
+        /** return index of the current waypoint **/
+        int GetCurrentWayPointID();
+
+        /** set functions **/
+
+        /** increments the followed waypoint index to the next waypoint **/
+        void IncrementCurrentWayPointID();
+
+        /** to reset the current way point index to a specific value **/
+        void SetCurrentWayPointID(int index);
+
+        /** to set the carrot's distance and direction from the robot **/
+        void SetCarrotRabbitPosition(float distance, float direction);
+
+        /** modifier functions **/
+
+        /** carrot behaviour when on a waypoint **/
+        void UpdateCarrotWhenReachedWaypoint();
+
+        /** carrot behaviour when on a line **/
+        void UpdateCarrotWhenMovingOnLine();
+
+        /** function for publishing carrot distance and direction to the rabbit node**/
+        void PublishCarrotPosition();
+
+        /** Read WayPoints information from a File **/
+        void ReadWayPointsFromFile(char* filename);
 
         /** function with calculates the perpendicular intersection point from the current followed line **/
         void GetPerpendicularLineIntersection(Position linePointOne, Position linePointTwo, Position robotLocation, Position &intersectionPoint);

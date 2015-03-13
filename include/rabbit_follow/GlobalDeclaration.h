@@ -6,8 +6,6 @@
 #include <fstream>
 #include <sstream>
 
-const float MaximumDistanceFromRabbit = 5;
-
 struct Position
 {
     float x;
@@ -21,4 +19,10 @@ float GetAngle(Position destination, Position source);
 float GetEuclideanDistance(Position one, Position two);
 std::string floatToString(float value);
 
+float ToRadians(float degrees);
+float ToDegrees(float radians);
+
+const float MaximumDistanceFromRabbit = 5;
+const float NanoSecondsInOneSecond = 1000000000;
+const float MaximumAllowedTurnValue = ToRadians(28); // value 28 is allowed max turn in unity
 #endif // GLOBALDECLARATION_H

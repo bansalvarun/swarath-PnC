@@ -1,9 +1,9 @@
 /******************************************************
-* Rabbit description file for rabbit follow algorithm  *
+* Rabbit description file for rabbit follow algorithm *
 * Written for SWARATH Project                         *
 * @author Nishant Sharma                              *
-* @version 0.0                                        *
-* @date 4, March, 2015                                *
+* @version 1.1                                        *
+* @date 13, March, 2015                               *
 ******************************************************/
 
 #ifndef Rabbit_H
@@ -15,9 +15,11 @@
 #include <rabbit_follow/carrotPosition.h>
 #include <vector>
 
+//#define debugRabbit
+
 using namespace std;
 
-enum RabbitState{followingCarrot, reachedEnd};
+enum RabbitState{FollowingCarrot, ReachedEnd};
 
 class Rabbit
 {
@@ -28,43 +30,70 @@ class Rabbit
         /** Default destructor */
         virtual ~Rabbit();
 
-        /** get functions **/
-        Position getRabbitPosition();
-        RabbitState getState();
-        float getSteering();
-        float getThrottle();
+        /** function implementing rabbit moving **/
+        void MoveRabbit(const ros::TimerEvent& event);
 
-        /** set functions **/
-        void setRabbitPosition(Position rabbit);
-        void setState(RabbitState state);
+        /** ros callback function for updating rabbit location**/
+        void CallbackUpdateRabbitGPSLocation(const std_msgs::String::ConstPtr& rabbit);
 
-        /** modifier functions **/
-        void changeSteering(float radian);
-        void moveRabbit(const ros::TimerEvent& event);
-        void publishSteering();
-        void publishThrottle();
+        /** ros callback function for updating rabbit heading angle**/
+        void CallbackUpdateRabbitIMULocation(const std_msgs::String::ConstPtr& rabbit);
 
-        void callbackUpdateRabbitGPSLocation(const std_msgs::String::ConstPtr& rabbit);
-        void callbackUpdateRabbitIMULocation(const std_msgs::String::ConstPtr& rabbit);
-        void callbackUpdateCarrotLocation(const rabbit_follow::carrotPosition::ConstPtr& carrot);
+        /** ros callback function for updating carrot location**/
+        void CallbackUpdateCarrotLocation(const rabbit_follow::carrotPosition::ConstPtr& carrot);
 
+        /** ros publisher for publishing steering value to unity **/
         ros::Publisher steer_publisher;
+
+        /** ros publisher for publishing throttle value to unity **/
         ros::Publisher throttle_publisher;
 
     protected:
     private:
 
+        /** rabbit location holder member **/
         Position rabbit;
-        float currentHeading;
-        rabbit_follow::carrotPosition carrotPos;
 
+        /** rabbit's current heading member **/
+        float rabbitCurrentHeading;
+
+        /** member to store carrot's distance and direction from robot **/
+        rabbit_follow::carrotPosition carrotPosition;
+
+        /** member to store required steering value by car in unity **/
         float steering;
+
+        /** member to store required throttle value by car in unity **/
         float throttle;
 
-        float velocity;
-        ros::Time lastUpdateTime;
+        /** member to store current velocity of the rabbit**/
+        float currentVelocity;
 
-        RabbitState state;
+        /** member to store last Velocity update time **/
+        ros::Time lastVelocityUpdateTime;
+
+        /** member to store last rabbit's last location at Velocity update time **/
+        Position rabbitLastLocation;
+
+        /** member to store current state of the rabbit **/
+        RabbitState rabbitState;
+
+        /** modifier functions **/
+
+        /** function to change rabbit's steering value so that it can turn properly in unity**/
+        void UpdateSteering();
+
+        /** function to change rabbit's throttle value so that it can move properly in unity**/
+        void UpdateThrottle();
+
+        /** function to calculate current velocity of the rabbit **/
+        void CalculateVelocity(Position position);
+
+        /** function to publish steering value to unity **/
+        void PublishSteering();
+
+        /** function to publish throttle value to unity **/
+        void PublishThrottle();
 };
 
 #endif // Rabbit_H
