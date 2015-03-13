@@ -17,7 +17,8 @@ struct Position
 
 std::vector<std::string> split(const std::string &s, char delim);
 std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems);
-float getEuclideanDistance(Position one, Position two);
+float GetAngle(Position destination, Position source);
+float GetEuclideanDistance(Position one, Position two);
 std::string floatToString(float value);
 
 #endif // GLOBALDECLARATION_H

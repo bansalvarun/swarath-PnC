@@ -1,24 +1,52 @@
+/*********************************************************
+* Carrot node file for rabbit follow algorithm *
+* Written for SWARATH Project                            *
+* @author Nishant Sharma                                 *
+* @version 1.0                                           *
+* @date 13, March, 2015                                  *
+*********************************************************/
+
 #include <ros/ros.h>
-#include "rabbit_follow/carrotPosition.h"
-#include "rabbit_follow/carrot.h"
+#include <rabbit_follow/carrotPosition.h>
+#include <rabbit_follow/carrot.h>
 #include <cmath>
 #include <vector>
 #include <string>
 
 using namespace std;
 
-int main (int argc,char** argv)
+int main (int passedArgumentCount,char** passedArgumentValues)
 {
-    ros::init(argc,argv,"rabbit_follow_carrot");
-    ros::NodeHandle n;
-    string filename;
-	cin>> filename;
-    Carrot carrot(filename);
+    if (passedArgumentCount != 1)// Check the value of passedArgumentCount. if filename is not passed
+    {
+        std::cout << "rosrun rabbit_follow carrot_node <filename>\n"; // Inform the user of how to use the program
+        exit(0);
+    }
 
-    carrot.publisher_carrot_robot = n.advertise<rabbit_follow::carrotPosition>("carrot_location_update",10);
-    ros::Subscriber sub = n.subscribe("gps_unity", 1000, &Carrot::callbackUpdateRabbitLocation, &carrot);
+    //passing empty remapping
+    ros::M_string remappings;
+
+    //initializing ros node
+    ros::init(remappings,"rabbit_follow_carrot");
+
+    //creating node handle for ros node
+    ros::NodeHandle nodeHandle;
+
+    //initializing carrot object with filename to read waypoint information from
+    Carrot carrot(passedArgumentValues[0]);
+
+    //initializing publisher of carrot to rabbit distance and direction
+    carrot.publisher_carrot_robot = nodeHandle.advertise<rabbit_follow::carrotPosition>("carrot_location_update",10);
+
+    //initializing subscriber for updating rabbit location
+    ros::Subscriber sub = nodeHandle.subscribe("gps_unity", 1000, &Carrot::CallbackUpdateRabbitLocation, &carrot);
+
+	//sleep to let code register punlisher and subscribers
 	ros::Duration(1).sleep();
-    ros::Timer timer = n.createTimer(ros::Duration(0.1),&Carrot::moveCarrot, &carrot);
 
+    //creating rostimer to call Movecarrot every 100 millisecond
+    ros::Timer timer = nodeHandle.createTimer(ros::Duration(0.1),&Carrot::MoveCarrot, &carrot);
+
+    //starting spin to start processing incoming messages
     ros::spin();
 }

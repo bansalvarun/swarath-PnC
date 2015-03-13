@@ -119,7 +119,7 @@ void Rabbit::callbackUpdateRabbitGPSLocation(const std_msgs::String::ConstPtr& r
     tempGPS.y = atof(temp[1].c_str());;
     tempGPS.z = atof(temp[2].c_str());;
 
-    float distance = getEuclideanDistance(tempGPS,getRabbitPosition());
+    float distance = GetEuclideanDistance(tempGPS,getRabbitPosition());
     ros::Time time = ros::Time::now();
 
     float totalTime = lastUpdateTime.sec - time.sec;

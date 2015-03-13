@@ -24,7 +24,12 @@ std::string floatToString(float value)
     return s;
 }
 
-float getEuclideanDistance(Position one, Position two)
+float GetEuclideanDistance(Position one, Position two)
 {
     return sqrt( pow( one.x - two.x ,2) + pow( one.z - two.z  ,2) );
+}
+
+float GetAngle(Position destination, Position source)
+{
+    return atan2(destination.z - source.z , destination.x - source.x);
 }
