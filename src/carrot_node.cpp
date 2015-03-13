@@ -17,9 +17,9 @@ using namespace std;
 
 int main (int passedArgumentCount,char** passedArgumentValues)
 {
-    if (passedArgumentCount != 1)// Check the value of passedArgumentCount. if filename is not passed
+    if(passedArgumentCount != 2)// Check the value of passedArgumentCount. if filename is not passed
     {
-        std::cout << "rosrun rabbit_follow carrot_node <filename>\n"; // Inform the user of how to use the program
+        std::cout << "usage -> rosrun rabbit_follow carrot_node <filename>\n"; // Inform the user of how to use the program
         exit(0);
     }
 
@@ -33,7 +33,7 @@ int main (int passedArgumentCount,char** passedArgumentValues)
     ros::NodeHandle nodeHandle;
 
     //initializing carrot object with filename to read waypoint information from
-    Carrot carrot(passedArgumentValues[0]);
+    Carrot carrot(passedArgumentValues[1]);
 
     //initializing publisher of carrot to rabbit distance and direction
     carrot.publisher_carrot_robot = nodeHandle.advertise<rabbit_follow::carrotPosition>("carrot_location_update",10);
