@@ -15,7 +15,7 @@
 #include <rabbit_follow/carrotPosition.h>
 #include <vector>
 
-//#define debugRabbit
+#define debugRabbit
 
 using namespace std;
 

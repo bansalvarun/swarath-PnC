@@ -138,7 +138,7 @@ void Rabbit::UpdateSteering()
     currentHeading = ToRadians(currentHeading);
 
 #ifdef debugRabbit
-    ROS_INFO("Desired heading = %f (rad), current Heading = %f (rad)");
+    ROS_INFO("Desired heading = %f (rad), current Heading = %f (rad)",desiredHeading, currentHeading);
 #endif // debugRabbit
 
     /** if current heading is greater than PI then subtract 2 PI to make come in the range -pi to 0**/
