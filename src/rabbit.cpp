@@ -60,14 +60,32 @@ void Rabbit::setState(RabbitState state)
 void Rabbit::changeSteering(float radian)
 {
     float temp=this->currentHeading;
+    temp=(temp*M_PI)/180;
+    if (temp>M_PI)
+    temp=temp-M_PI;
+    float radian_1=radian+temp;
+    if (radian_1>M_PI)
+    radian_1=radian-temp-M_PI;
 
-    temp=fmod(temp+(38*(M_PI/45)),38 * (M_PI/45));
 
-    radian = fmod(radian+(38*(M_PI/45)),38 * (M_PI/45));
-    radian=radian-temp;
-    radian=radian/((7*M_PI/45));
-    //ROS_INFO("steering %f",radian); //This is not getting printed which means this function isnot being called properly
-    this->steering=radian;
+
+
+
+//    //temp=fmod(temp+(38*(M_PI/45)),38 * (M_PI/45));
+//
+    //radian=radian/M_PI;
+
+    //radian = fmod(radian+(38*(M_PI/45)),7 * (M_PI/45));
+    //radian=radian-temp;
+    //ROS_INFO("steering %f",radian * 180 / M_PI);
+    if (radian_1 >  (7*M_PI/45)) radian_1=(7*M_PI/45);
+    else if (radian < - (7*M_PI/45)) radian =-(7*M_PI/45);
+
+    radian_1=radian_1/((7*M_PI/45));
+    ROS_INFO("steering %f",radian_1); //This is not getting printed which means this function isnot being called properly
+    //if(radian > 1) radian = 1;
+    //if(radian < -1) radian = -1;
+    this->steering=-radian_1;
 }
 
 void Rabbit::moveRabbit(const ros::TimerEvent& event)
@@ -76,7 +94,7 @@ void Rabbit::moveRabbit(const ros::TimerEvent& event)
     float deltaT = 0.1;
     float tempThrottle = ((this->carrotPos.carrotDistance - (this->velocity * deltaT))*2) / (deltaT * deltaT); // s = ut + 1/2 at^2
 
-	//ROS_INFO("tempTh %f, velocity %f",tempThrottle, velocity);
+	ROS_INFO("tempTh %f, velocity %f",tempThrottle, velocity);
 
     if (this->carrotPos.carrotDistance <= MaximumDistanceFromRabbit)
     {
@@ -85,7 +103,8 @@ void Rabbit::moveRabbit(const ros::TimerEvent& event)
 
     tempThrottle /= 55000;
 
-    this->throttle = 0.5;
+    this->throttle = tempThrottle;
+
 
 	//ROS_INFO("tempTh %f, velocity %f",tempThrottle, velocity);
 
@@ -108,7 +127,7 @@ void Rabbit::publishThrottle()
     throttle_publisher.publish(temp);
 }
 
-int counter =0;
+int counter =50;
 
 void Rabbit::callbackUpdateRabbitGPSLocation(const std_msgs::String::ConstPtr& rabbit)
 {
@@ -119,7 +138,7 @@ void Rabbit::callbackUpdateRabbitGPSLocation(const std_msgs::String::ConstPtr& r
     tempGPS.y = atof(temp[1].c_str());;
     tempGPS.z = atof(temp[2].c_str());;
 
-    float distance = GetEuclideanDistance(tempGPS,getRabbitPosition());
+    float distance = getEuclideanDistance(tempGPS,getRabbitPosition());
     ros::Time time = ros::Time::now();
 
     float totalTime = lastUpdateTime.sec - time.sec;
@@ -130,12 +149,12 @@ void Rabbit::callbackUpdateRabbitGPSLocation(const std_msgs::String::ConstPtr& r
         nsec += 1000000000;
     }
     totalTime += (nsec/1000000000.0);
-    if (counter > 12)
-    {
-        this->currentHeading = atan2((int)tempGPS.z - (int)this->rabbit.z, (int)tempGPS.x - (int)this->rabbit.x);
-        ROS_INFO("direct %f",this->currentHeading);
-        counter =0;
-    }
+//    if (counter > 12)
+//    {
+//        this->currentHeading = atan2((int)tempGPS.x - (int)this->rabbit.x,(int)tempGPS.z - (int)this->rabbit.z);
+//        ROS_INFO("direct %f",this->currentHeading);
+//        counter =0;
+//    }
     this->velocity = distance/totalTime;
     this->rabbit = tempGPS;
     this->lastUpdateTime = ros::Time::now();
@@ -143,8 +162,8 @@ void Rabbit::callbackUpdateRabbitGPSLocation(const std_msgs::String::ConstPtr& r
 
 void Rabbit::callbackUpdateRabbitIMULocation(const std_msgs::String::ConstPtr& rabbit)
 {
-//    vector<string> temp = split(rabbit->data,',');
-//    this->steering = atof(temp[1].c_str());
+    vector<string> temp = split(rabbit->data,',');
+    this->currentHeading = atof(temp[1].c_str());
 //    this->steering -= 180;
 //    ROS_INFO("direct %f",this->steering);
 //    this->steering *= M_PI / 180; //already set = no change
