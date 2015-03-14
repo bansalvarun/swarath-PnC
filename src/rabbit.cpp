@@ -60,9 +60,9 @@ Rabbit::~Rabbit()
 void Rabbit::MoveRabbit(const ros::TimerEvent& event)
 {
 
-#ifdef debugRabbit
-    ROS_INFO("Entering Move Rabbit Function");
-#endif // debugRabbit
+//#ifdef debugRabbit
+//    ROS_INFO("Entering Move Rabbit Function");
+//#endif // debugRabbit
 
     CalculateVelocity(this->rabbit);
 	UpdateSteering();
@@ -70,18 +70,18 @@ void Rabbit::MoveRabbit(const ros::TimerEvent& event)
     PublishSteering();
     PublishThrottle();
 
-#ifdef debugRabbit
-    ROS_INFO("Exiting Move Rabbit Function");
-#endif // debugRabbit
+//#ifdef debugRabbit
+//    ROS_INFO("Exiting Move Rabbit Function");
+//#endif // debugRabbit
 
 }
 
 void Rabbit::CallbackUpdateRabbitGPSLocation(const std_msgs::String::ConstPtr& rabbit)
 {
-
-#ifdef debugRabbit
-    ROS_INFO("Entering Callback Update Rabbit GPS Location Function");
-#endif // debugRabbit
+//
+//#ifdef debugRabbit
+//    ROS_INFO("Entering Callback Update Rabbit GPS Location Function");
+//#endif // debugRabbit
 
     Position newRabbitGPSLocation;
     vector<string> temp = split(rabbit->data,',');
@@ -90,13 +90,13 @@ void Rabbit::CallbackUpdateRabbitGPSLocation(const std_msgs::String::ConstPtr& r
     newRabbitGPSLocation.z = atof(temp[2].c_str());;
     this->rabbit = newRabbitGPSLocation;
 
-#ifdef debugRabbit
-    ROS_INFO("Robot New Location: x = %f, y = %f, z = %f", this->rabbit.x, this->rabbit.y, this->rabbit.z);
-#endif // debugRabbit
-
-#ifdef debugRabbit
-    ROS_INFO("Exiting Callback Update Rabbit GPS Location Function");
-#endif // debugRabbit
+//#ifdef debugRabbit
+//    ROS_INFO("Robot New Location: x = %f, y = %f, z = %f", this->rabbit.x, this->rabbit.y, this->rabbit.z);
+//#endif // debugRabbit
+//
+//#ifdef debugRabbit
+//    ROS_INFO("Exiting Callback Update Rabbit GPS Location Function");
+//#endif // debugRabbit
 
 }
 
@@ -105,9 +105,9 @@ void Rabbit::CallbackUpdateRabbitIMULocation(const std_msgs::String::ConstPtr& r
     vector<string> temp = split(rabbit->data,',');
     this->rabbitCurrentHeading = atof(temp[1].c_str());
 
-#ifdef debugRabbit
-    ROS_INFO("Current Updated Rabbit Heading is %f", this->rabbitCurrentHeading);
-#endif // debugRabbit
+//#ifdef debugRabbit
+//    ROS_INFO("Current Updated Rabbit Heading is %f", this->rabbitCurrentHeading);
+//#endif // debugRabbit
 
 }
 
@@ -116,9 +116,9 @@ void Rabbit::CallbackUpdateCarrotLocation(const rabbit_follow::carrotPosition::C
     this->carrotPosition.carrotDistance  = carrot->carrotDistance;
     this->carrotPosition.carrotDirection = carrot->carrotDirection;
 
-#ifdef debugRabbit
-    ROS_INFO("Carrot Distance = %f, Carrot Direction = %f", this->carrotPosition.carrotDistance, this->carrotPosition.carrotDirection);
-#endif // debugRabbit
+//#ifdef debugRabbit
+//    ROS_INFO("Carrot Distance = %f, Carrot Direction = %f", this->carrotPosition.carrotDistance, this->carrotPosition.carrotDirection);
+//#endif // debugRabbit
 
 }
 
@@ -126,9 +126,9 @@ void Rabbit::CallbackUpdateCarrotLocation(const rabbit_follow::carrotPosition::C
 void Rabbit::UpdateSteering()
 {
 
-#ifdef debugRabbit
-    ROS_INFO("Entering Update Steering Method");
-#endif // debugRabbit
+//#ifdef debugRabbit
+//    ROS_INFO("Entering Update Steering Method");
+//#endif // debugRabbit
 
     /** set desired and current heading **/
     float desiredHeading = this->carrotPosition.carrotDirection;
@@ -169,32 +169,32 @@ void Rabbit::UpdateSteering()
     ROS_INFO("Updated Steering = %f", this->steering);
 #endif // debugRabbit
 
-#ifdef debugRabbit
-    ROS_INFO("Exiting Update Steering Method");
-#endif // debugRabbit
+//#ifdef debugRabbit
+//    ROS_INFO("Exiting Update Steering Method");
+//#endif // debugRabbit
 }
 
 void Rabbit::UpdateThrottle()
 {
 
-#ifdef debugRabbit
-    ROS_INFO("Entering Update Throttle Function");
-#endif // debugRabbit
+//#ifdef debugRabbit
+//    ROS_INFO("Entering Update Throttle Function");
+//#endif // debugRabbit
 
-    this->throttle = 0.3;
+    this->throttle = 0.5;
 
-#ifdef debugRabbit
-    ROS_INFO("Exiting Update Throttle Function");
-#endif // debugRabbit
+//#ifdef debugRabbit
+//    ROS_INFO("Exiting Update Throttle Function");
+//#endif // debugRabbit
 
 }
 
 void Rabbit::CalculateVelocity(Position position)
 {
 
-#ifdef debugRabbit
-    ROS_INFO("Entering Calculate Veloocity Function");
-#endif // debugRabbit
+//#ifdef debugRabbit
+//    ROS_INFO("Entering Calculate Veloocity Function");
+//#endif // debugRabbit
 
     /** get displacement between robot's last and current location **/
     float displacement = GetEuclideanDistance(position, this->rabbitLastLocation);
@@ -231,10 +231,10 @@ void Rabbit::CalculateVelocity(Position position)
     /** updating last update time and rabbit last location **/
     this->lastVelocityUpdateTime = currentTime;
     this->rabbitLastLocation = position;
-
-#ifdef debugRabbit
-    ROS_INFO("Exiting Calculate velocity function");
-#endif // debugRabbit
+//
+//#ifdef debugRabbit
+//    ROS_INFO("Exiting Calculate velocity function");
+//#endif // debugRabbit
 
 }
 
@@ -244,9 +244,9 @@ void Rabbit::PublishSteering()
     steeringMessage.data = floatToString(this->steering);
     steer_publisher.publish(steeringMessage);
 
-#ifdef debugRabbit
-    ROS_INFO("Publishing Steering to Unity");
-#endif // debugRabbit
+//#ifdef debugRabbit
+//    ROS_INFO("Publishing Steering to Unity");
+//#endif // debugRabbit
 
 }
 
@@ -256,9 +256,9 @@ void Rabbit::PublishThrottle()
     throttleMessage.data = floatToString(this->throttle);
     throttle_publisher.publish(throttleMessage);
 
-#ifdef debugRabbit
-    ROS_INFO("Publishing Steering to Unity");
-#endif // debugRabbit
+//#ifdef debugRabbit
+//    ROS_INFO("Publishing Steering to Unity");
+//#endif // debugRabbit
 
 }
 

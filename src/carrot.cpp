@@ -99,9 +99,9 @@ void Carrot::SetCarrotRabbitPosition(float distance, float direction)
 void Carrot::UpdateCarrotWhenReachedWaypoint()
 {
 
-#ifdef debugCarrot
-    ROS_INFO("Entering Update Carrot When Reached Waypoint Function");
-#endif // debugCarrot
+//#ifdef debugCarrot
+//    ROS_INFO("Entering Update Carrot When Reached Waypoint Function");
+//#endif // debugCarrot
 
     /** get Distance between rabbit and carrot **/
     float carrotDistance = GetEuclideanDistance(this->rabbit, this->carrot);
@@ -137,18 +137,18 @@ void Carrot::UpdateCarrotWhenReachedWaypoint()
 
     }
 
-#ifdef debugCarrot
-    ROS_INFO("Exiting Update Carrot When Reached Waypoint Function");
-#endif // debugCarrot
+//#ifdef debugCarrot
+//    ROS_INFO("Exiting Update Carrot When Reached Waypoint Function");
+//#endif // debugCarrot
 
 }
 
 void Carrot::UpdateCarrotWhenMovingOnLine()
 {
 
-#ifdef debugCarrot
-    ROS_INFO("Entering Update Carrot When Moving On Line Function");
-#endif // debugCarrot
+//#ifdef debugCarrot
+//    ROS_INFO("Entering Update Carrot When Moving On Line Function");
+//#endif // debugCarrot
 
     /** get robot projection on the current line that is being followed **/
     Position robotLineIntersectionPoint;
@@ -197,18 +197,18 @@ void Carrot::UpdateCarrotWhenMovingOnLine()
     float carrotDirection = GetAngle(this->carrot, this->rabbit);
     SetCarrotRabbitPosition(carrotDistance, carrotDirection);
 
-#ifdef debugCarrot
-    ROS_INFO("Exiting Update Carrot When Moving On Line Function");
-#endif // debugCarrot
+//#ifdef debugCarrot
+//    ROS_INFO("Exiting Update Carrot When Moving On Line Function");
+//#endif // debugCarrot
 
 }
 
 void Carrot::MoveCarrot(const ros::TimerEvent& event)
 {
 
-#ifdef debugCarrot
-    ROS_INFO("Entering Move Carrot Function");
-#endif // debugCarrot
+//#ifdef debugCarrot
+//    ROS_INFO("Entering Move Carrot Function");
+//#endif // debugCarrot
 
     switch(this->carrotState)
     {
@@ -229,9 +229,9 @@ void Carrot::MoveCarrot(const ros::TimerEvent& event)
 
     PublishCarrotPosition();
 
-#ifdef debugCarrot
-    ROS_INFO("Exiting Move Carrot Function");
-#endif // debugCarrot
+//#ifdef debugCarrot
+//    ROS_INFO("Exiting Move Carrot Function");
+//#endif // debugCarrot
 
 }
 
@@ -243,9 +243,9 @@ void Carrot::PublishCarrotPosition()
 void Carrot::CallbackUpdateRabbitLocation(const std_msgs::String::ConstPtr& rabbit)
 {
 
-#ifdef debugCarrot
-    ROS_INFO("Entering Callback Update Rabbit Location Function");
-#endif // debugCarrot
+//#ifdef debugCarrot
+//    ROS_INFO("Entering Callback Update Rabbit Location Function");
+//#endif // debugCarrot
 
     /** assigning received information to rabbit location **/
     vector<string> temp = split(rabbit->data,',');
@@ -253,13 +253,13 @@ void Carrot::CallbackUpdateRabbitLocation(const std_msgs::String::ConstPtr& rabb
     this->rabbit.y = atof(temp[1].c_str());;
     this->rabbit.z = atof(temp[2].c_str());;
 
-#ifdef debugCarrot
-    ROS_INFO("New Rabbit Values are: x = %f, y = %f, z = %f", this->rabbit.x, this->rabbit.y, this->rabbit.z);
-#endif // debugCarrot
-
-#ifdef debugCarrot
-    ROS_INFO("Exiting Callback Update Rabbit Location Function");
-#endif // debugCarrot
+//#ifdef debugCarrot
+//    ROS_INFO("New Rabbit Values are: x = %f, y = %f, z = %f", this->rabbit.x, this->rabbit.y, this->rabbit.z);
+//#endif // debugCarrot
+//
+//#ifdef debugCarrot
+//    ROS_INFO("Exiting Callback Update Rabbit Location Function");
+//#endif // debugCarrot
 
 }
 
