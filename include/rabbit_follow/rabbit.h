@@ -13,6 +13,7 @@
 #include <std_msgs/String.h>
 #include <rabbit_follow/GlobalDeclaration.h>
 #include <rabbit_follow/carrotPosition.h>
+#include <visualization_msgs/Marker.h>
 #include <vector>
 
 #define debugRabbit
@@ -47,9 +48,15 @@ class Rabbit
 
         /** ros publisher for publishing throttle value to unity **/
         ros::Publisher throttle_publisher;
+        ros::Publisher publisher_rabbit_location_rviz;
 
+        /** initialize carrot rviz marker**/
+        void InitializeMarker();
     protected:
     private:
+        visualization_msgs::Marker rabbitMarker;
+        visualization_msgs::Marker rabbitCurrentHeadingMarker;
+        visualization_msgs::Marker rabbitDesiredHeadingMarker;
 
         /** rabbit location holder member **/
         Position rabbit;

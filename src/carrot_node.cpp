@@ -37,6 +37,7 @@ int main (int passedArgumentCount,char** passedArgumentValues)
 
     //initializing publisher of carrot to rabbit distance and direction
     carrot.publisher_carrot_robot = nodeHandle.advertise<rabbit_follow::carrotPosition>("carrot_location_update",10);
+    carrot.publisher_carrot_location_rviz = nodeHandle.advertise<visualization_msgs::Marker>("carrot_location_rviz_update",10);
 
     //initializing subscriber for updating rabbit location
     ros::Subscriber subscriber = nodeHandle.subscribe("gps_unity", 1000, &Carrot::CallbackUpdateRabbitLocation, &carrot);
@@ -46,6 +47,8 @@ int main (int passedArgumentCount,char** passedArgumentValues)
 
     //creating rostimer to call Movecarrot every 100 millisecond
     ros::Timer timer = nodeHandle.createTimer(ros::Duration(0.067),&Carrot::MoveCarrot, &carrot);
+
+    carrot.InitializeMarker();
 
     //starting spin to start processing incoming messages
     ros::spin();

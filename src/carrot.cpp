@@ -30,6 +30,38 @@ Carrot::~Carrot()
 
 }
 
+void Carrot::InitializeMarker()
+{
+    //init headers
+	carrotMarker.header.frame_id    = wayPointMarker.header.frame_id = "rabbit_follow";
+	carrotMarker.header.stamp       = wayPointMarker.header.stamp = ros::Time::now();
+	carrotMarker.ns                 = wayPointMarker.ns = "rabbit_follow_carrot";
+	carrotMarker.action             = wayPointMarker.action = visualization_msgs::Marker::ADD;
+	carrotMarker.pose.orientation.w = wayPointMarker.pose.orientation.w  = 1.0;
+
+    //setting id for each marker
+    carrotMarker.id = 0;
+    wayPointMarker.id = 1;
+	//defining types
+	carrotMarker.type = visualization_msgs::Marker::SPHERE;
+    wayPointMarker.type = 4;
+	//setting scale
+	carrotMarker.scale.x = 1;
+    carrotMarker.scale.y = 1;
+    carrotMarker.scale.z = 1;
+    wayPointMarker.scale.x = 0.21;
+    //assigning colors
+	carrotMarker.color.r   = 1.0f;
+	carrotMarker.color.a   = 1.0f;
+
+  wayPointMarker.color.r = 0;
+  wayPointMarker.color.g = 0;
+  wayPointMarker.color.b = 0;
+  wayPointMarker.color.a = 01;
+
+}
+
+
 /** get functions **/
 //Position Carrot::getCarrotLocation()
 //{
@@ -106,7 +138,7 @@ void Carrot::UpdateCarrotWhenReachedWaypoint()
     ROS_INFO("Carrot,x = %f, z = %f",carrot.x,carrot.z);
     /** get Distance between rabbit and carrot **/
     float carrotDistance = GetEuclideanDistance(this->carrot,this->rabbit);
-    float carrotDirection = GetAngle(this->rabbit,this->carrot);
+    float carrotDirection = GetAngle(this->carrot,this->rabbit);
     /** if carrot distance from rabbit is less than the specified minimum distance
             then change carrot state to moving on line
         else
@@ -115,7 +147,7 @@ void Carrot::UpdateCarrotWhenReachedWaypoint()
     if(carrotDistance < minAllowedDistanceCarrotToRabbit)
     {
         this->carrotState = MovingOnLine;
-        ROS_INFO("current way point %d \n waypoint size %d", GetCurrentWayPointID(), wayPointPath.size());
+        ROS_INFO("current way point %d \n waypoint size %ld", GetCurrentWayPointID(), wayPointPath.size());
         /** if this was the last waypoint, carrotState will be reached end **/
         if(GetCurrentWayPointID() >= wayPointPath.size())
         {
@@ -241,6 +273,12 @@ void Carrot::MoveCarrot(const ros::TimerEvent& event)
 
 void Carrot::PublishCarrotPosition()
 {
+    carrotMarker.pose.position.x = this->carrot.x;
+    carrotMarker.pose.position.y = this->carrot.z;
+    carrotMarker.pose.position.z = 0;
+    this->publisher_carrot_location_rviz.publish(carrotMarker);
+    this->publisher_carrot_location_rviz.publish(wayPointMarker);
+
     this->publisher_carrot_robot.publish(carrotPosition);
 }
 
@@ -276,17 +314,21 @@ void Carrot::ReadWayPointsFromFile(char* filename)
 
     if(filename[0] == '\0') return;
     Position  position;
+    geometry_msgs::Point posi;
     this->wayPointPath.clear();
     string line;
+    wayPointMarker.points.clear();
     ifstream myfile (filename);
     if (myfile.is_open())
     {
         while ( getline (myfile,line) )
         {
             vector<string> temp = split(line,',');
-            position.x = atof(temp[0].c_str());
+            posi.x = position.x = atof(temp[0].c_str());
             position.y = atof(temp[1].c_str());
-            position.z = atof(temp[2].c_str());
+            posi.y = position.z = atof(temp[2].c_str());
+            posi.z =00;
+            wayPointMarker.points.push_back(posi);
             this->wayPointPath.push_back(position);
         }
         myfile.close();

@@ -9,6 +9,7 @@
 #include <ros/ros.h>
 #include <rabbit_follow/rabbit.h>
 #include <rabbit_follow/carrotPosition.h>
+#include <visualization_msgs/Marker.h>
 #include <std_msgs/String.h>
 
 int main (int argc,char** argv)
@@ -24,7 +25,7 @@ int main (int argc,char** argv)
 
     //initializing publisher of carrot to rabbit distance and direction
     rabbit.steer_publisher = n.advertise<std_msgs::String>("steering_unity",10);
-
+    rabbit.publisher_rabbit_location_rviz = n.advertise<visualization_msgs::Marker>("rabbit_location_rviz_update",10);
     //initializing publisher of carrot to rabbit distance and direction
     rabbit.throttle_publisher = n.advertise<std_msgs::String>("throttle_unity",10);
 
@@ -39,7 +40,7 @@ int main (int argc,char** argv)
 
     //sleep to let code register punlisher and subscribers
 	ros::Duration(1).sleep();
-
+    rabbit.InitializeMarker();
     //creating rostimer to call Move Rabbit every 100 millisecond
     ros::Timer timer = n.createTimer(ros::Duration(0.067), &Rabbit::MoveRabbit, &rabbit);
 

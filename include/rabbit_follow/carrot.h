@@ -11,6 +11,7 @@
 
 #include <ros/ros.h>
 #include <std_msgs/String.h>
+#include <visualization_msgs/Marker.h>
 #include <rabbit_follow/GlobalDeclaration.h>
 #include <rabbit_follow/carrotPosition.h>
 #include <vector>
@@ -42,9 +43,16 @@ class Carrot
         /** "publisher_carrot_robot" -> left public for ROS instantiation **/
         ros::Publisher publisher_carrot_robot;
 
+        ros::Publisher publisher_carrot_location_rviz;
+
+        /** initialize carrot rviz marker**/
+        void InitializeMarker();
+
         const static int minAllowedDistanceCarrotToRabbit = 1;
     protected:
     private:
+        visualization_msgs::Marker carrotMarker;
+        visualization_msgs::Marker wayPointMarker;
 
         /** member for storing the waypoint path to be followed **/
         vector <Position> wayPointPath;

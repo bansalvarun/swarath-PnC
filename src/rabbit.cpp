@@ -8,6 +8,7 @@
 *************************************/
 
 #include <rabbit_follow/rabbit.h>
+#include <geometry_msgs/Point.h>
 
 /** constructors **/
 Rabbit::Rabbit()
@@ -19,6 +20,43 @@ Rabbit::Rabbit()
 Rabbit::~Rabbit()
 {
     //dtor
+}
+
+void Rabbit::InitializeMarker()
+{
+ //init headers
+	rabbitMarker.header.frame_id    = rabbitCurrentHeadingMarker.header.frame_id    = rabbitDesiredHeadingMarker.header.frame_id    = "rabbit_follow";
+	rabbitMarker.header.stamp       = rabbitCurrentHeadingMarker.header.stamp       = rabbitDesiredHeadingMarker.header.stamp       = ros::Time::now();
+	rabbitMarker.ns                 = rabbitCurrentHeadingMarker.ns                 = rabbitDesiredHeadingMarker.ns                 = "rabbit_follow_rabbit";
+	rabbitMarker.action             = rabbitCurrentHeadingMarker.action             = rabbitDesiredHeadingMarker.action             = visualization_msgs::Marker::ADD;
+	rabbitMarker.pose.orientation.w = rabbitCurrentHeadingMarker.pose.orientation.w = rabbitDesiredHeadingMarker.pose.orientation.w = 1.0;
+
+    //setting id for each marker
+    rabbitMarker.id    = 2;
+	rabbitCurrentHeadingMarker.id      = 3;
+	rabbitDesiredHeadingMarker.id  = 4;
+
+	//defining types
+	rabbitCurrentHeadingMarker.type   = visualization_msgs::Marker::LINE_STRIP;
+	rabbitDesiredHeadingMarker.type  = visualization_msgs::Marker::LINE_STRIP;
+	rabbitMarker.type    = visualization_msgs::Marker::CUBE;
+
+	//setting scale
+	rabbitMarker.scale.x   = 1;
+    rabbitMarker.scale.y   = 1;
+    rabbitMarker.scale.z   = 1;
+
+    rabbitCurrentHeadingMarker.scale.x = 0.21;
+    rabbitDesiredHeadingMarker.scale.x = 0.21;
+
+    //assigning colors
+	rabbitMarker.color.g   = 1.0f;
+	rabbitCurrentHeadingMarker.color.g     = 1.0f;
+
+	rabbitDesiredHeadingMarker.color.b = 0.8f;
+	rabbitDesiredHeadingMarker.color.b = 1.0f;
+
+	rabbitMarker.color.a = rabbitDesiredHeadingMarker.color.a = rabbitCurrentHeadingMarker.color.a = 1.0f;
 }
 
 /** get functions **/
@@ -172,6 +210,20 @@ void Rabbit::UpdateSteering()
 
     this->steering = -1 * requiredTurningAngle;
 
+    geometry_msgs::Point position;
+
+    position.x = this->rabbit.x;
+    position.y = this->rabbit.z;
+    position.z = 0;
+
+    rabbitCurrentHeadingMarker.points.clear();
+
+    rabbitCurrentHeadingMarker.points.push_back(position);
+    position.x = position.x + 2*cos(currentHeading );
+    position.y = position.y + 2*sin(currentHeading );
+
+    rabbitCurrentHeadingMarker.points.push_back(position);
+
 #ifdef debugRabbit
     ROS_INFO("Updated Steering = %f", this->steering);
 #endif // debugRabbit
@@ -250,6 +302,29 @@ void Rabbit::PublishSteering()
     std_msgs::String steeringMessage;
     steeringMessage.data = floatToString(this->steering);
     steer_publisher.publish(steeringMessage);
+
+    geometry_msgs::Point position;
+
+    position.x = this->rabbit.x;
+    position.y = this->rabbit.z;
+    position.z = 0;
+
+    rabbitMarker.pose.position = position;
+
+    rabbitDesiredHeadingMarker.points.clear();
+
+
+    rabbitDesiredHeadingMarker.points.push_back(position);
+
+
+    position.x = position.x + 3*cos(this->carrotPosition.carrotDirection);
+    position.y = position.y + 3*sin(this->carrotPosition.carrotDirection);
+
+    rabbitDesiredHeadingMarker.points.push_back(position);
+
+    publisher_rabbit_location_rviz.publish(rabbitMarker);
+    publisher_rabbit_location_rviz.publish(rabbitDesiredHeadingMarker);
+    publisher_rabbit_location_rviz.publish(rabbitCurrentHeadingMarker);
 
 //#ifdef debugRabbit
 //    ROS_INFO("Publishing Steering to Unity");
