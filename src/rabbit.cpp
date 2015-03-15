@@ -136,12 +136,12 @@ void Rabbit::UpdateSteering()
 
     /** convert current heading from degrees to radians **/
     currentHeading = ToRadians(currentHeading);
-    currentHeading *= -1;
 
     /** if current heading is greater than PI then subtract 2 PI to make come in the range -pi to 0**/
     if(currentHeading>M_PI)
-        currentHeading=currentHeading - (M_PI * 2);
+        currentHeading -= (M_PI * 2);
 
+    currentHeading *= -1;
 
     /** convert current heading from clockwise to anticlockwise **/
 

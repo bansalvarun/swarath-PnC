@@ -45,7 +45,7 @@ int main (int passedArgumentCount,char** passedArgumentValues)
 	ros::Duration(1).sleep();
 
     //creating rostimer to call Movecarrot every 100 millisecond
-    ros::Timer timer = nodeHandle.createTimer(ros::Duration(0.1),&Carrot::MoveCarrot, &carrot);
+    ros::Timer timer = nodeHandle.createTimer(ros::Duration(0.067),&Carrot::MoveCarrot, &carrot);
 
     //starting spin to start processing incoming messages
     ros::spin();
