@@ -136,19 +136,26 @@ void Rabbit::UpdateSteering()
 
     /** convert current heading from degrees to radians **/
     currentHeading = ToRadians(currentHeading);
-
-#ifdef debugRabbit
-    ROS_INFO("Desired heading = %f (rad), current Heading = %f (rad)",desiredHeading, currentHeading);
-#endif // debugRabbit
+    currentHeading *= -1;
 
     /** if current heading is greater than PI then subtract 2 PI to make come in the range -pi to 0**/
     if(currentHeading>M_PI)
         currentHeading=currentHeading - (M_PI * 2);
 
+
+    /** convert current heading from clockwise to anticlockwise **/
+
+
+#ifdef debugRabbit
+    ROS_INFO("Desired heading = %f (rad), current Heading = %f (rad)",desiredHeading, currentHeading);
+#endif // debugRabbit
+
     /** setting required turning angle **/
-    float requiredTurningAngle = desiredHeading + currentHeading;
+    float requiredTurningAngle = desiredHeading - currentHeading;
     if(requiredTurningAngle > M_PI)
-        requiredTurningAngle = desiredHeading - currentHeading - M_PI;
+        requiredTurningAngle -= (2* M_PI);
+    if(requiredTurningAngle < (-1 * M_PI))
+        requiredTurningAngle += (2 * M_PI);
 
     /** bring down required turn angle in the range -maximumAllowedTurn to maximumAllowedTurn **/
     if(requiredTurningAngle >  MaximumAllowedTurnValue)
