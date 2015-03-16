@@ -15,10 +15,6 @@
 Rabbit::Rabbit()
 {
     this->rabbitState = FollowingCarrot;
-    string filename;
-    cin >> filename;
-    this->ReadWayPointsFromFile(filename);
-    this->currentWayPointID = 1;
 }
 
 /** destructor **/
@@ -242,25 +238,13 @@ void Rabbit::UpdateThrottle()
 {
     float deltaTime = 0.1;
     float tempThrottle = 0;
-    float distanceRabbitToWayPoint = GetEuclideanDistance(this->rabbit,wayPointPath[currentWayPointID]);
+    float distanceRabbitToWayPoint = 10;//GetEuclideanDistance(this->rabbit,wayPointPath[currentWayPointID]);
 
-    ROS_INFO("Current WayPoint %d",currentWayPointID);
 
     //if (this->carrotPosition.carrotDistance < (MaximumDistanceFromRabbit - 0.2))
 
     if (distanceRabbitToWayPoint < (8))
     {
-        if(distanceRabbitToWayPoint < 2 )
-        {
-            currentWayPointID++;
-            if(currentWayPointID >= wayPointPath.size())
-            {
-                this->throttle = 0;
-                PublishThrottle();
-                ros::Duration(1).sleep();
-                exit(1);
-            }
-        }
         //breaking
         //float currentTimeToCarrot = this->carrotPosition.carrotDistance / this->currentVelocity;
         ROS_INFO("Breaking");
@@ -387,43 +371,3 @@ void Rabbit::PublishThrottle()
 //#endif // debugRabbit
 
 }
-
-void Rabbit::ReadWayPointsFromFile(string filename)
-{
-
-#ifdef debugCarrot
-    ROS_INFO("Starting read Way points from file");
-#endif // debugCarrot
-
-    if(filename[0] == '\0') return;
-    Position  position;
-    geometry_msgs::Point posi;
-    this->wayPointPath.clear();
-    string line;
-
-    ifstream myfile (filename.c_str());
-    if (myfile.is_open())
-    {
-        while ( getline (myfile,line) )
-        {
-            vector<string> temp = split(line,',');
-            posi.x = position.x = atof(temp[0].c_str());
-            position.y = atof(temp[1].c_str());
-            posi.y = position.z = atof(temp[2].c_str());
-            posi.z =00;
-
-            this->wayPointPath.push_back(position);
-        }
-        myfile.close();
-    }
-    else
-    {
-        ROS_INFO("Unable to read File");
-        exit(1);
-    }
-
-#ifdef debugCarrot
-    ROS_INFO("Reading way points from file complete");
-#endif // debugCarrot
-}
-

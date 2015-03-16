@@ -61,14 +61,6 @@ class Rabbit
         /** rabbit location holder member **/
         Position rabbit;
 
-
-        vector <Position> wayPointPath;
-        int currentWayPointID;
-        void ReadWayPointsFromFile(string filename);
-
-
-
-
         /** rabbit's current heading member **/
         float rabbitCurrentHeading;
 
