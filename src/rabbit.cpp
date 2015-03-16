@@ -224,9 +224,9 @@ void Rabbit::UpdateSteering()
 
     rabbitCurrentHeadingMarker.points.push_back(position);
 
-#ifdef debugRabbit
+/**#ifdef debugRabbit
     ROS_INFO("Updated Steering = %f", this->steering);
-#endif // debugRabbit
+#endif**/ // debugRabbit
 
 //#ifdef debugRabbit
 //    ROS_INFO("Exiting Update Steering Method");
@@ -239,8 +239,8 @@ void Rabbit::UpdateThrottle()
 //#ifdef debugRabbit
 //    ROS_INFO("Entering Update Throttle Function");
 //#endif // debugRabbit
+    float maxthrottle=0.07;
 
-    this->throttle = 0.5;
 
 //#ifdef debugRabbit
 //    ROS_INFO("Exiting Update Throttle Function");
@@ -267,21 +267,25 @@ void Rabbit::CalculateVelocity(Position position)
         get difference between last update time and current time
     **/
     ros::Time currentTime = ros::Time::now();
-    float totalTimeElapsed = this->lastVelocityUpdateTime.sec - currentTime.sec;
-    float nanoSeconds = this->lastVelocityUpdateTime.nsec - currentTime.nsec;
-    if(nanoSeconds < 0)
+    float totalTimeElapsed = currentTime.sec - this->lastVelocityUpdateTime.sec;
+
+    int nanoSeconds = currentTime.nsec - this->lastVelocityUpdateTime.nsec;
+
+
+   if(nanoSeconds < 0)
     {
         totalTimeElapsed -= 1;
         nanoSeconds += NanoSecondsInOneSecond;
     }
     totalTimeElapsed += (nanoSeconds / NanoSecondsInOneSecond);
+     this->currentVelocity = displacement / totalTimeElapsed;
 
 #ifdef debugRabbit
     ROS_INFO("time elapsed = %f", totalTimeElapsed);
 #endif // debugRabbit
 
     /** velocity is displacemnt upon time **/
-    this->currentVelocity = displacement / totalTimeElapsed;
+
 
 #ifdef debugRabbit
     ROS_INFO("calculated Velocity = %f", this->currentVelocity);

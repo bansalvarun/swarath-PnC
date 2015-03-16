@@ -42,7 +42,7 @@ int main (int argc,char** argv)
 	ros::Duration(1).sleep();
     rabbit.InitializeMarker();
     //creating rostimer to call Move Rabbit every 100 millisecond
-    ros::Timer timer = n.createTimer(ros::Duration(0.067), &Rabbit::MoveRabbit, &rabbit);
+    ros::Timer timer = n.createTimer(ros::Duration(0.1), &Rabbit::MoveRabbit, &rabbit);     //changing from 15hz to 10hz
 
     //starting spin to start processing incoming messages
     ros::spin();
