@@ -238,20 +238,23 @@ void Rabbit::UpdateThrottle()
     float deltaTime = 0.1;
     float tempThrottle = 0;
 
-    if (this->carrotPosition.carrotDistance < (MaximumDistanceFromRabbit - 0.2))
+    //if (this->carrotPosition.carrotDistance < (MaximumDistanceFromRabbit - 0.2))
+    if (this->carrotPosition.carrotDistance < (8))
     {
         //breaking
         //float currentTimeToCarrot = this->carrotPosition.carrotDistance / this->currentVelocity;
+        ROS_INFO("Breaking");
         float velocitySquare = this->currentVelocity * this->currentVelocity;
         float requiredAcceleration = -1 * velocitySquare / (2 * this->carrotPosition.carrotDistance);
         tempThrottle = requiredAcceleration;
     }
     else
     {
+        ROS_INFO("Normal");
         //accelerate
         tempThrottle = ((this->carrotPosition.carrotDistance - (this->currentVelocity * deltaTime))*2) / (deltaTime * deltaTime); // s = ut + 1/2 at^2
     }
-
+    ROS_INFO("Throttle %f - %f",this->throttle, tempThrottle);
     if(tempThrottle > 0.07) tempThrottle = 0.07;
     if(tempThrottle < 0.07) tempThrottle = -0.07;
 
@@ -260,7 +263,7 @@ void Rabbit::UpdateThrottle()
     if(currentVelocity > MaximumAllowedVelocity) tempThrottle = 0;
 
     this->throttle = tempThrottle;
-
+    ROS_INFO("Throttle %f - %f",this->throttle, tempThrottle);
 }
 
 void Rabbit::CalculateVelocity(Position position)
