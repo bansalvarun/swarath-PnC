@@ -60,40 +60,6 @@ void Rabbit::InitializeMarker()
 	rabbitMarker.color.a = rabbitDesiredHeadingMarker.color.a = rabbitCurrentHeadingMarker.color.a = 1.0f;
 }
 
-/** get functions **/
-
-//Position Rabbit::getRabbitPosition()
-//{
-//    return this->rabbit;
-//}
-//
-//RabbitState Rabbit::getState()
-//{
-//    return this->state;
-//}
-//
-//float Rabbit::getSteering()
-//{
-//    return this->steering;
-//}
-//
-//float Rabbit::getThrottle()
-//{
-//    return this->throttle;
-//}
-
-/** set functions **/
-
-//void Rabbit::setRabbitPosition(Position rabbit)
-//{
-//    this->rabbit = rabbit;
-//}
-//
-//void Rabbit::setState(RabbitState state)
-//{
-//    this->state = state;
-//}
-
 /** modifier functions **/
 
 void Rabbit::MoveRabbit(const ros::TimerEvent& event)
@@ -152,9 +118,16 @@ void Rabbit::CallbackUpdateRabbitIMULocation(const std_msgs::String::ConstPtr& r
 
 void Rabbit::CallbackUpdateCarrotLocation(const rabbit_follow::carrotPosition::ConstPtr& carrot)
 {
+    if(carrot->rabbitState == 2)
+{
+        this->throttle = 0;
+        PublishThrottle();
+    exit(1);
+}
     this->carrotPosition.carrotDistance  = carrot->carrotDistance;
     this->carrotPosition.carrotDirection = carrot->carrotDirection;
-
+    this->carrotPosition.rabbitState = carrot->rabbitState;
+    this->carrotPosition.rabbitDistanceToWaypoint = carrot->rabbitDistanceToWaypoint;
 //#ifdef debugRabbit
 //    ROS_INFO("Carrot Distance = %f, Carrot Direction = %f", this->carrotPosition.carrotDistance, this->carrotPosition.carrotDirection);
 //#endif // debugRabbit
@@ -241,9 +214,8 @@ void Rabbit::UpdateThrottle()
     float distanceRabbitToWayPoint = 10;//GetEuclideanDistance(this->rabbit,wayPointPath[currentWayPointID]);
 
 
-    //if (this->carrotPosition.carrotDistance < (MaximumDistanceFromRabbit - 0.2))
-
-    if (distanceRabbitToWayPoint < (8))
+    //if (this->carrotPosition.rabbitState == rabbit_follow::carrotPosition::NearWayPoint)
+    if (this->carrotPosition.rabbitDistanceToWaypoint < (8))
     {
         //breaking
         //float currentTimeToCarrot = this->carrotPosition.carrotDistance / this->currentVelocity;
@@ -251,20 +223,20 @@ void Rabbit::UpdateThrottle()
         float velocitySquare = this->currentVelocity * this->currentVelocity;
         float requiredAcceleration = -1 * velocitySquare / (2 * 8);
         tempThrottle = requiredAcceleration;
-        if(this->currentVelocity  < 0.001)
-        tempThrottle = 0.015;
+        if(this->currentVelocity  < 0.05)
+                tempThrottle = 0.035;
     }
     else
     {
         ROS_INFO("Normal");
         //accelerate
-        tempThrottle = ((this->carrotPosition.carrotDistance - (this->currentVelocity * deltaTime))*2) / (deltaTime * deltaTime); // s = ut + 1/2 at^2
+        tempThrottle = (((0.1 * this->carrotPosition.carrotDistance) - (this->currentVelocity * deltaTime))*2) / (deltaTime * deltaTime); // s = ut + 1/2 at^2
     }
     ROS_INFO("Throttle %f - %f",this->throttle, tempThrottle);
-    if(tempThrottle > 0.04) tempThrottle = 0.04;
-    if(tempThrottle < -0.04) tempThrottle = -0.04;
+    if(tempThrottle > 0.07) tempThrottle = 0.07;
+    if(tempThrottle < -0.07) tempThrottle = -0.07;
 
-    tempThrottle /= 0.04;
+    tempThrottle /= 0.07;
 
     if(currentVelocity > MaximumAllowedVelocity) tempThrottle = 0;
 
