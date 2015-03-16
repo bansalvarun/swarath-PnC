@@ -235,16 +235,31 @@ void Rabbit::UpdateSteering()
 
 void Rabbit::UpdateThrottle()
 {
+    float deltaTime = 0.1;
+    float tempThrottle = 0;
 
-//#ifdef debugRabbit
-//    ROS_INFO("Entering Update Throttle Function");
-//#endif // debugRabbit
-    float maxthrottle=0.07;
+    if (this->carrotPosition.carrotDistance < (MaximumDistanceFromRabbit - 0.2))
+    {
+        //breaking
+        //float currentTimeToCarrot = this->carrotPosition.carrotDistance / this->currentVelocity;
+        float velocitySquare = this->currentVelocity * this->currentVelocity;
+        float requiredAcceleration = -1 * velocitySquare / (2 * this->carrotPosition.carrotDistance);
+        tempThrottle = requiredAcceleration;
+    }
+    else
+    {
+        //accelerate
+        tempThrottle = ((this->carrotPosition.carrotDistance - (this->currentVelocity * deltaTime))*2) / (deltaTime * deltaTime); // s = ut + 1/2 at^2
+    }
 
+    if(tempThrottle > 0.07) tempThrottle = 0.07;
+    if(tempThrottle < 0.07) tempThrottle = -0.07;
 
-//#ifdef debugRabbit
-//    ROS_INFO("Exiting Update Throttle Function");
-//#endif // debugRabbit
+    tempThrottle /= 0.07;
+
+    if(currentVelocity > MaximumAllowedVelocity) tempThrottle = 0;
+
+    this->throttle = tempThrottle;
 
 }
 
