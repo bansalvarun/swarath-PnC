@@ -48,7 +48,7 @@ class Carrot
         /** initialize carrot rviz marker**/
         void InitializeMarker();
 
-        const static int minAllowedDistanceCarrotToRabbit = 1;
+        const static int minAllowedDistanceCarrotToRabbit = 2;
     protected:
     private:
         visualization_msgs::Marker carrotMarker;

@@ -22,7 +22,7 @@ std::string floatToString(float value);
 float ToRadians(float degrees);
 float ToDegrees(float radians);
 
-const float MaximumDistanceFromRabbit = 2;
+const float MaximumDistanceFromRabbit = 3;
 const float MaximumAllowedVelocity = 5.5;
 const float NanoSecondsInOneSecond = 1000000000;
 const float MaximumAllowedTurnValue = ToRadians(30); // value 30 is allowed max turn in unity
