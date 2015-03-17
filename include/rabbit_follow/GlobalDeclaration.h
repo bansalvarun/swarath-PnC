@@ -21,6 +21,7 @@ std::string floatToString(float value);
 
 float ToRadians(float degrees);
 float ToDegrees(float radians);
+float ang_wrap(float radians);
 
 const float MaximumDistanceFromRabbit = 4;
 const float MaximumDistanceFromRabbitToWayPoint = 5;

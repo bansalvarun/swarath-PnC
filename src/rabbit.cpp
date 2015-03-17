@@ -15,6 +15,10 @@
 Rabbit::Rabbit()
 {
     this->rabbitState = FollowingCarrot;
+    string filename;
+    cin >> filename;
+    this->ReadWayPointsFromFile(filename);
+    this->currentWayPointID = 1;
 }
 
 /** destructor **/
@@ -22,6 +26,7 @@ Rabbit::~Rabbit()
 {
     //dtor
 }
+
 
 void Rabbit::InitializeMarker()
 {
@@ -61,6 +66,11 @@ void Rabbit::InitializeMarker()
 }
 
 /** modifier functions **/
+
+Position Rabbit::GetWayPoint(int index)
+{
+    return this->wayPointPath[index];
+}
 
 void Rabbit::MoveRabbit(const ros::TimerEvent& event)
 {
@@ -128,6 +138,8 @@ void Rabbit::CallbackUpdateCarrotLocation(const rabbit_follow::carrotPosition::C
     this->carrotPosition.carrotDirection = carrot->carrotDirection;
     this->carrotPosition.rabbitState = carrot->rabbitState;
     this->carrotPosition.rabbitDistanceToWaypoint = carrot->rabbitDistanceToWaypoint;
+    this->carrotPosition.carrotx=this->carrot.x;
+    this->carrotPosition.carrotz=this->carrot.z;
 //#ifdef debugRabbit
 //    ROS_INFO("Carrot Distance = %f, Carrot Direction = %f", this->carrotPosition.carrotDistance, this->carrotPosition.carrotDirection);
 //#endif // debugRabbit
@@ -145,44 +157,88 @@ void Rabbit::UpdateSteering()
     /** set desired and current heading **/
     float desiredHeading = this->carrotPosition.carrotDirection;
     float currentHeading = this->rabbitCurrentHeading;
-
-    /** convert current heading from degrees to radians **/
-    currentHeading = ToRadians(currentHeading);
-
-    /** if current heading is greater than PI then subtract 2 PI to make come in the range -pi to 0**/
-    if(currentHeading>M_PI)
-        currentHeading -= (M_PI * 2);
-
-    currentHeading *= -1;
-
-    /** convert current heading from clockwise to anticlockwise **/
+    float q22_gain=0.65;
+     currentHeading = ToRadians(currentHeading);
+    float vel=this->currentVelocity;
+    float theta=GetAngle(GetWayPoint(currentWayPointID), GetWayPoint(currentWayPointID-1));
+    float DistFmWp = GetEuclideanDistance(this->rabbit,GetWayPoint(currentWayPointID-1));
+   // float DistFmWp=sqrt( pow( carrotPosition.carrotx- GetWayPoint(currentWayPointID-1).x ,2) + pow( carrotPosition.carrotz- GetWayPoint(currentWayPointID-1).z  ,2) );
+   float theta_m=GetAngle(this->rabbit, GetWayPoint(currentWayPointID-1));
+ //  float theta_m=atan2((carrotPosition.carrotz - GetWayPoint(currentWayPointID-1).z), (carrotPosition.carrotx- GetWayPoint(currentWayPointID-1).x));
+    float  ct_err=DistFmWp*sin(theta-theta_m);
 
 
-#ifdef debugRabbit
-    ROS_INFO("Desired heading = %f (rad), current Heading = %f (rad)",desiredHeading, currentHeading);
-#endif // debugRabbit
 
-    /** setting required turning angle **/
-    float requiredTurningAngle = desiredHeading - currentHeading;
-    if(requiredTurningAngle > M_PI)
-        requiredTurningAngle -= (2* M_PI);
-    if(requiredTurningAngle < (-1 * M_PI))
-        requiredTurningAngle += (2 * M_PI);
+    /** ct_errdot **/
+    float vd=vel*sin(ang_wrap(currentHeading-theta));
+    //float q11=abs(2/(2-abs(ct_err)));
+    float q11=abs(0.3/(0.3-abs(ct_err)));
+    ct_err=-ct_err;
+    float u=-(sqrt(q11)*ct_err + sqrt(2*sqrt(q11)+q22_gain)*vd);
+//    if (u>0.07) u=0.07;
+//    if (u< -0.07) u=-0.07;
+    float psi_new=0.1*(u/vel);
 
     /** bring down required turn angle in the range -maximumAllowedTurn to maximumAllowedTurn **/
-    if(requiredTurningAngle >  MaximumAllowedTurnValue)
+    if(psi_new >  MaximumAllowedTurnValue)
     {
-        requiredTurningAngle = MaximumAllowedTurnValue;
+        psi_new = MaximumAllowedTurnValue;
     }
-    else if(requiredTurningAngle < ( -1 * MaximumAllowedTurnValue))
+    else if(psi_new < ( -1 * MaximumAllowedTurnValue))
     {
-        requiredTurningAngle = -1 * MaximumAllowedTurnValue;
+        psi_new = -1 * MaximumAllowedTurnValue;
     }
 
     /** normalizing the turn from -1 to 1 **/
-    requiredTurningAngle = requiredTurningAngle / MaximumAllowedTurnValue;
+    psi_new = psi_new / MaximumAllowedTurnValue;
 
-    this->steering = -1 * requiredTurningAngle;
+    this->steering = -1 * psi_new;
+
+
+
+
+
+
+
+
+
+    /** convert current heading from degrees to radians **/
+
+
+    /** if current heading is greater than PI then subtract 2 PI to make come in the range -pi to 0**/
+//    if(currentHeading>M_PI)
+//        currentHeading -= (M_PI * 2);
+//
+//    currentHeading *= -1;
+//
+//    /** convert current heading from clockwise to anticlockwise **/
+//
+//
+//#ifdef debugRabbit
+//    ROS_INFO("Desired heading = %f (rad), current Heading = %f (rad)",desiredHeading, currentHeading);
+//#endif // debugRabbit
+//
+//    /** setting required turning angle **/
+//    float requiredTurningAngle = desiredHeading - currentHeading;
+//    if(requiredTurningAngle > M_PI)
+//        requiredTurningAngle -= (2* M_PI);
+//    if(requiredTurningAngle < (-1 * M_PI))
+//        requiredTurningAngle += (2 * M_PI);
+//
+//    /** bring down required turn angle in the range -maximumAllowedTurn to maximumAllowedTurn **/
+//    if(requiredTurningAngle >  MaximumAllowedTurnValue)
+//    {
+//        requiredTurningAngle = MaximumAllowedTurnValue;
+//    }
+//    else if(requiredTurningAngle < ( -1 * MaximumAllowedTurnValue))
+//    {
+//        requiredTurningAngle = -1 * MaximumAllowedTurnValue;
+//    }
+//
+//    /** normalizing the turn from -1 to 1 **/
+//    requiredTurningAngle = requiredTurningAngle / MaximumAllowedTurnValue;
+//
+//    this->steering = -1 * requiredTurningAngle;
 
     geometry_msgs::Point position;
 
@@ -343,4 +399,42 @@ void Rabbit::PublishThrottle()
 //    ROS_INFO("Publishing Steering to Unity");
 //#endif // debugRabbit
 
+}
+
+void Rabbit::ReadWayPointsFromFile(string filename)
+{
+
+#ifdef debugCarrot
+ ROS_INFO("Starting read Way points from file");
+#endif // debugCarrot
+
+ if(filename[0] == '\0') return;
+ Position position;
+ geometry_msgs::Point posi;
+ this->wayPointPath.clear();
+ string line;
+
+ ifstream myfile (filename.c_str());
+ if (myfile.is_open())
+ {
+ while ( getline (myfile,line) )
+ {
+ vector<string> temp = split(line,',');
+ posi.x = position.x = atof(temp[0].c_str());
+ position.y = atof(temp[1].c_str());
+ posi.y = position.z = atof(temp[2].c_str());
+ posi.z =00;
+
+ this->wayPointPath.push_back(position);
+ }
+ myfile.close();
+ }
+ else
+ {
+ ROS_INFO("Unable to read File");
+ exit(1);
+ }
+#ifdef debugCarrot
+ ROS_INFO("Reading way points from file complete");
+#endif // debugCarrot
 }

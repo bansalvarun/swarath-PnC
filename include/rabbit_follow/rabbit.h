@@ -60,6 +60,10 @@ class Rabbit
 
         /** rabbit location holder member **/
         Position rabbit;
+        Position carrot;
+        vector <Position> wayPointPath;
+        int currentWayPointID;
+        void ReadWayPointsFromFile(string filename);
 
         /** rabbit's current heading member **/
         float rabbitCurrentHeading;
@@ -76,6 +80,8 @@ class Rabbit
         /** member to store current velocity of the rabbit**/
         float currentVelocity;
 
+
+
         /** member to store last Velocity update time **/
         ros::Time lastVelocityUpdateTime;
 
@@ -84,6 +90,7 @@ class Rabbit
 
         /** member to store current state of the rabbit **/
         RabbitState rabbitState;
+
 
         /** modifier functions **/
 
@@ -101,6 +108,7 @@ class Rabbit
 
         /** function to publish throttle value to unity **/
         void PublishThrottle();
+        Position GetWayPoint(int index);
 };
 
 #endif // Rabbit_H

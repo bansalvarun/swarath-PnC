@@ -7,5 +7,5 @@ float64 carrotDistance
 float64 carrotDirection
 float64 rabbitDistanceToWaypoint
 int32 rabbitState
-float64 carrotx
-float64 carrotz
+Position carrotpos
+

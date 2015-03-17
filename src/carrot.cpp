@@ -120,6 +120,8 @@ void Carrot::SetCarrotRabbitPosition(float distance, float direction, float rabb
     this->carrotPosition.carrotDirection = direction;
     this->carrotPosition.carrotDistance = distance;
     this->carrotPosition.rabbitState = rabbitState;
+    this->carrotPosition.carrotx=this->carrot.x;
+    this->carrotPosition.carrotz=this->carrot.z;
 
 #ifdef debugCarrot
     //ROS_INFO("carrot Direction = %f, carrot Distance = %f", direction, distance);

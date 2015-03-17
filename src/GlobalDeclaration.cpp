@@ -45,3 +45,19 @@ float ToDegrees(float radians)
 {
     return radians * 180 / M_PI;
 }
+int count1=0;
+int count2=0;
+float ang_wrap(float radians)
+{
+    while ((radians > M_PI) && (count1<100))
+    {radians=radians-(2*M_PI);
+     count1++;
+    }
+    count1=0;
+    while (radians < (-1*M_PI) && count2<100)
+   { radians=radians+(2*M_PI);
+     count2++;
+   }
+   count2=0;
+    return radians;
+}
