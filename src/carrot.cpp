@@ -227,10 +227,11 @@ void Carrot::UpdateCarrotWhenMovingOnLine()
     /** check if carrot is still on the line segment or not **/
     float carrotToLastWaypointDistance, intersectionToLastWaypointDistance;
     carrotToLastWaypointDistance  = GetEuclideanDistance(carrotNewPosition, GetWayPoint(currentWayPointID-1));
+    float carrotToCurrentWaypointDistance  = GetEuclideanDistance(carrotNewPosition, GetWayPoint(currentWayPointID));
     intersectionToLastWaypointDistance = GetEuclideanDistance(GetWayPoint(currentWayPointID-1), GetWayPoint(currentWayPointID));
 
 #ifdef debugCarrot
-    //ROS_INFO("testing if carrot is on the line segment or not");
+    ROS_INFO("carrot ot wapnt = %f",carrotToCurrentWaypointDistance);
 #endif // debugCarrot
 
     /** if carrot is crossing the line segment
@@ -238,7 +239,8 @@ void Carrot::UpdateCarrotWhenMovingOnLine()
         else
             carrot location is the new carrot location
     **/
-    if (carrotToLastWaypointDistance > intersectionToLastWaypointDistance)
+    if (carrotToLastWaypointDistance > intersectionToLastWaypointDistance )//&&
+    //if(carrotToCurrentWaypointDistance < 4)
     {
         this->carrot = GetWayPoint(currentWayPointID);
         this->carrotState = ReachedWaypoint;
@@ -251,6 +253,7 @@ void Carrot::UpdateCarrotWhenMovingOnLine()
 
     float carrotDistance = GetEuclideanDistance(this->carrot, this->rabbit);
     float carrotDirection = GetAngle(this->carrot, this->rabbit);
+
     SetCarrotRabbitPosition(carrotDistance, carrotDirection, GetEuclideanDistance(robotLineIntersectionPoint,GetWayPoint(currentWayPointID)), rabbit_follow::carrotPosition::FollowingCarrot);
 
 //#ifdef debugCarrot
