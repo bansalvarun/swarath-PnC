@@ -118,11 +118,12 @@ void Rabbit::CallbackUpdateRabbitIMULocation(const std_msgs::String::ConstPtr& r
 
 void Rabbit::CallbackUpdateCarrotLocation(const rabbit_follow::carrotPosition::ConstPtr& carrot)
 {
-    if(carrot->rabbitState == 2)
+    if(carrot->rabbitState == rabbit_follow::carrotPosition::ReachedEnd)
 {
         this->throttle = 0;
         PublishThrottle();
-    exit(1);
+        ros::Duration(1).sleep();
+        exit(1);
 }
     this->carrotPosition.carrotDistance  = carrot->carrotDistance;
     this->carrotPosition.carrotDirection = carrot->carrotDirection;
@@ -223,15 +224,17 @@ void Rabbit::UpdateThrottle()
         float velocitySquare = this->currentVelocity * this->currentVelocity;
         float requiredAcceleration = -1 * velocitySquare / (2 * 8);
         tempThrottle = requiredAcceleration;
-        tempThrottle /= 2;
-        if(this->currentVelocity  < 0.05)
-                tempThrottle = 0.035;
+        tempThrottle *= (0.75);
+        if(this->currentVelocity  < 0.25)
+                tempThrottle = 0.07;
     }
     else
     {
         ROS_INFO("Normal");
         //accelerate
         tempThrottle = (((0.1 * this->carrotPosition.carrotDistance) - (this->currentVelocity * deltaTime))*2) / (deltaTime * deltaTime); // s = ut + 1/2 at^2
+        if(tempThrottle < 0) tempThrottle = 0;
+
     }
     ROS_INFO("Throttle %f - %f",this->throttle, tempThrottle);
     if(tempThrottle > 0.07) tempThrottle = 0.07;
