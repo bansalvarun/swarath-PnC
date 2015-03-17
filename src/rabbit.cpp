@@ -15,10 +15,6 @@
 Rabbit::Rabbit()
 {
     this->rabbitState = FollowingCarrot;
-    string filename;
-    cin >> filename;
-    this->ReadWayPointsFromFile(filename);
-    this->currentWayPointID = 1;
 }
 
 /** destructor **/
@@ -63,40 +59,6 @@ void Rabbit::InitializeMarker()
 
 	rabbitMarker.color.a = rabbitDesiredHeadingMarker.color.a = rabbitCurrentHeadingMarker.color.a = 1.0f;
 }
-
-/** get functions **/
-
-//Position Rabbit::getRabbitPosition()
-//{
-//    return this->rabbit;
-//}
-//
-//RabbitState Rabbit::getState()
-//{
-//    return this->state;
-//}
-//
-//float Rabbit::getSteering()
-//{
-//    return this->steering;
-//}
-//
-//float Rabbit::getThrottle()
-//{
-//    return this->throttle;
-//}
-
-/** set functions **/
-
-//void Rabbit::setRabbitPosition(Position rabbit)
-//{
-//    this->rabbit = rabbit;
-//}
-//
-//void Rabbit::setState(RabbitState state)
-//{
-//    this->state = state;
-//}
 
 /** modifier functions **/
 
@@ -156,9 +118,16 @@ void Rabbit::CallbackUpdateRabbitIMULocation(const std_msgs::String::ConstPtr& r
 
 void Rabbit::CallbackUpdateCarrotLocation(const rabbit_follow::carrotPosition::ConstPtr& carrot)
 {
+    if(carrot->rabbitState == 2)
+{
+        this->throttle = 0;
+        PublishThrottle();
+    exit(1);
+}
     this->carrotPosition.carrotDistance  = carrot->carrotDistance;
     this->carrotPosition.carrotDirection = carrot->carrotDirection;
-
+    this->carrotPosition.rabbitState = carrot->rabbitState;
+    this->carrotPosition.rabbitDistanceToWaypoint = carrot->rabbitDistanceToWaypoint;
 //#ifdef debugRabbit
 //    ROS_INFO("Carrot Distance = %f, Carrot Direction = %f", this->carrotPosition.carrotDistance, this->carrotPosition.carrotDirection);
 //#endif // debugRabbit
@@ -242,45 +211,33 @@ void Rabbit::UpdateThrottle()
 {
     float deltaTime = 0.1;
     float tempThrottle = 0;
-    float distanceRabbitToWayPoint = GetEuclideanDistance(this->rabbit,wayPointPath[currentWayPointID]);
+    //float distanceRabbitToWayPoint = 10;//GetEuclideanDistance(this->rabbit,wayPointPath[currentWayPointID]);
 
-    ROS_INFO("Current WayPoint %d",currentWayPointID);
 
-    //if (this->carrotPosition.carrotDistance < (MaximumDistanceFromRabbit - 0.2))
-
-    if (distanceRabbitToWayPoint < (8))
+    //if (this->carrotPosition.rabbitState == rabbit_follow::carrotPosition::NearWayPoint)
+    if (this->carrotPosition.rabbitDistanceToWaypoint < (8))
     {
-        if(distanceRabbitToWayPoint < 2 )
-        {
-            currentWayPointID++;
-            if(currentWayPointID >= wayPointPath.size())
-            {
-                this->throttle = 0;
-                PublishThrottle();
-                ros::Duration(1).sleep();
-                exit(1);
-            }
-        }
         //breaking
         //float currentTimeToCarrot = this->carrotPosition.carrotDistance / this->currentVelocity;
         ROS_INFO("Breaking");
         float velocitySquare = this->currentVelocity * this->currentVelocity;
         float requiredAcceleration = -1 * velocitySquare / (2 * 8);
         tempThrottle = requiredAcceleration;
-        if(this->currentVelocity  < 0.001)
-        tempThrottle = 0.015;
+        tempThrottle /= 2;
+        if(this->currentVelocity  < 0.05)
+                tempThrottle = 0.035;
     }
     else
     {
         ROS_INFO("Normal");
         //accelerate
-        tempThrottle = ((this->carrotPosition.carrotDistance - (this->currentVelocity * deltaTime))*2) / (deltaTime * deltaTime); // s = ut + 1/2 at^2
+        tempThrottle = (((0.1 * this->carrotPosition.carrotDistance) - (this->currentVelocity * deltaTime))*2) / (deltaTime * deltaTime); // s = ut + 1/2 at^2
     }
     ROS_INFO("Throttle %f - %f",this->throttle, tempThrottle);
-    if(tempThrottle > 0.04) tempThrottle = 0.04;
-    if(tempThrottle < -0.04) tempThrottle = -0.04;
+    if(tempThrottle > 0.07) tempThrottle = 0.07;
+    if(tempThrottle < -0.07) tempThrottle = -0.07;
 
-    tempThrottle /= 0.04;
+    tempThrottle /= 0.07;
 
     if(currentVelocity > MaximumAllowedVelocity) tempThrottle = 0;
 
@@ -387,43 +344,3 @@ void Rabbit::PublishThrottle()
 //#endif // debugRabbit
 
 }
-
-void Rabbit::ReadWayPointsFromFile(string filename)
-{
-
-#ifdef debugCarrot
-    ROS_INFO("Starting read Way points from file");
-#endif // debugCarrot
-
-    if(filename[0] == '\0') return;
-    Position  position;
-    geometry_msgs::Point posi;
-    this->wayPointPath.clear();
-    string line;
-
-    ifstream myfile (filename.c_str());
-    if (myfile.is_open())
-    {
-        while ( getline (myfile,line) )
-        {
-            vector<string> temp = split(line,',');
-            posi.x = position.x = atof(temp[0].c_str());
-            position.y = atof(temp[1].c_str());
-            posi.y = position.z = atof(temp[2].c_str());
-            posi.z =00;
-
-            this->wayPointPath.push_back(position);
-        }
-        myfile.close();
-    }
-    else
-    {
-        ROS_INFO("Unable to read File");
-        exit(1);
-    }
-
-#ifdef debugCarrot
-    ROS_INFO("Reading way points from file complete");
-#endif // debugCarrot
-}
-

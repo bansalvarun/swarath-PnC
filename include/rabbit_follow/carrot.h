@@ -48,7 +48,7 @@ class Carrot
         /** initialize carrot rviz marker**/
         void InitializeMarker();
 
-        const static int minAllowedDistanceCarrotToRabbit = 2;
+
     protected:
     private:
         visualization_msgs::Marker carrotMarker;
@@ -89,7 +89,7 @@ class Carrot
         void SetCurrentWayPointID(int index);
 
         /** to set the carrot's distance and direction from the robot **/
-        void SetCarrotRabbitPosition(float distance, float direction);
+        void SetCarrotRabbitPosition(float distance, float direction, float rabbitDistanceToWaypoint, int rabbitState);
 
         /** modifier functions **/
 
