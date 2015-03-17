@@ -54,10 +54,10 @@ void Carrot::InitializeMarker()
 	carrotMarker.color.r   = 1.0f;
 	carrotMarker.color.a   = 1.0f;
 
-  wayPointMarker.color.r = 0;
-  wayPointMarker.color.g = 0;
-  wayPointMarker.color.b = 0;
-  wayPointMarker.color.a = 01;
+    wayPointMarker.color.r = 0;
+    wayPointMarker.color.g = 0;
+    wayPointMarker.color.b = 0;
+    wayPointMarker.color.a = 1;
 
 }
 

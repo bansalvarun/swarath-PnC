@@ -211,7 +211,7 @@ void Rabbit::UpdateThrottle()
 {
     float deltaTime = 0.1;
     float tempThrottle = 0;
-    float distanceRabbitToWayPoint = 10;//GetEuclideanDistance(this->rabbit,wayPointPath[currentWayPointID]);
+    //float distanceRabbitToWayPoint = 10;//GetEuclideanDistance(this->rabbit,wayPointPath[currentWayPointID]);
 
 
     //if (this->carrotPosition.rabbitState == rabbit_follow::carrotPosition::NearWayPoint)
@@ -223,6 +223,7 @@ void Rabbit::UpdateThrottle()
         float velocitySquare = this->currentVelocity * this->currentVelocity;
         float requiredAcceleration = -1 * velocitySquare / (2 * 8);
         tempThrottle = requiredAcceleration;
+        tempThrottle /= 2;
         if(this->currentVelocity  < 0.05)
                 tempThrottle = 0.035;
     }
