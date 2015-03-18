@@ -62,7 +62,7 @@ class Rabbit
         Position rabbit;
         Position carrot;
         vector <Position> wayPointPath;
-        int currentWayPointID;
+        int currentWayPointID_rab;
         void ReadWayPointsFromFile(string filename);
 
         /** rabbit's current heading member **/
@@ -81,7 +81,8 @@ class Rabbit
         float currentVelocity;
 
 
-
+        int GetCurrentWayPointID();
+        void IncrementCurrentWayPointID();
         /** member to store last Velocity update time **/
         ros::Time lastVelocityUpdateTime;
 

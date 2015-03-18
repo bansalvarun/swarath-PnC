@@ -18,7 +18,7 @@ Rabbit::Rabbit()
     string filename;
     cin >> filename;
     this->ReadWayPointsFromFile(filename);
-    this->currentWayPointID = 1;
+    this->currentWayPointID_rab = 1;
 }
 
 /** destructor **/
@@ -26,7 +26,7 @@ Rabbit::~Rabbit()
 {
     //dtor
 }
-
+int flag=1;
 
 void Rabbit::InitializeMarker()
 {
@@ -71,7 +71,14 @@ Position Rabbit::GetWayPoint(int index)
 {
     return this->wayPointPath[index];
 }
-
+int Rabbit::GetCurrentWayPointID()
+{
+    return this->currentWayPointID_rab;
+}
+void Rabbit::IncrementCurrentWayPointID()
+{
+	this->currentWayPointID_rab += 1;
+}
 void Rabbit::MoveRabbit(const ros::TimerEvent& event)
 {
 
@@ -153,31 +160,60 @@ void Rabbit::UpdateSteering()
 //#ifdef debugRabbit
 //    ROS_INFO("Entering Update Steering Method");
 //#endif // debugRabbit
+    //float boundary=0.8;
 
-    /** set desired and current heading **/
+
+
+
     float desiredHeading = this->carrotPosition.carrotDirection;
     float currentHeading = this->rabbitCurrentHeading;
-    float q22_gain=0.65;
+    float psi_new;
+    //float q22_gain=0.8;
      currentHeading = ToRadians(currentHeading);
+     currentHeading=(-1)*ang_wrap(currentHeading);
     float vel=this->currentVelocity;
-    float theta=GetAngle(GetWayPoint(currentWayPointID), GetWayPoint(currentWayPointID-1));
-    float DistFmWp = GetEuclideanDistance(this->rabbit,GetWayPoint(currentWayPointID-1));
-   // float DistFmWp=sqrt( pow( carrotPosition.carrotx- GetWayPoint(currentWayPointID-1).x ,2) + pow( carrotPosition.carrotz- GetWayPoint(currentWayPointID-1).z  ,2) );
-   float theta_m=GetAngle(this->rabbit, GetWayPoint(currentWayPointID-1));
- //  float theta_m=atan2((carrotPosition.carrotz - GetWayPoint(currentWayPointID-1).z), (carrotPosition.carrotx- GetWayPoint(currentWayPointID-1).x));
-    float  ct_err=DistFmWp*sin(theta-theta_m);
+    float theta=GetAngle(GetWayPoint(currentWayPointID_rab), GetWayPoint(currentWayPointID_rab-1));
+    float DistFmWp = GetEuclideanDistance(this->rabbit,GetWayPoint(currentWayPointID_rab-1));
+     float q22_gain;
+    float boundary;
+    float theta_m=GetAngle(this->rabbit, GetWayPoint(currentWayPointID_rab-1));
+     float  ct_err=DistFmWp*sin(theta-theta_m);
+    //int flag=1;
+    /** set desired and current heading **/
+    if (GetEuclideanDistance(this->rabbit,GetWayPoint(currentWayPointID_rab))< (8)&&(flag==1))
+    {IncrementCurrentWayPointID();
+    flag=0;
+    }
+    else flag=1;
 
+    //else{
+     q22_gain=0.8;
+     boundary=0.8;
+    //}
+   // float DistFmWp=sqrt( pow( carrotPosition.carrotx- GetWayPoint(currentWayPointID-1).x ,2) + pow( carrotPosition.carrotz- GetWayPoint(currentWayPointID-1).z  ,2) );
+
+ //  float theta_m=atan2((carrotPosition.carrotz - GetWayPoint(currentWayPointID-1).z), (carrotPosition.carrotx- GetWayPoint(currentWayPointID-1).x));
+
+     ROS_INFO("current way point %d \n waypointdist %f \n crosstrack %f", GetCurrentWayPointID(), this->carrotPosition.rabbitDistanceToWaypoint,ct_err);
 
 
     /** ct_errdot **/
     float vd=vel*sin(ang_wrap(currentHeading-theta));
     //float q11=abs(2/(2-abs(ct_err)));
-    float q11=abs(0.3/(0.3-abs(ct_err)));
+    float q11=abs(boundary/(boundary-abs(ct_err)));
     ct_err=-ct_err;
     float u=-(sqrt(q11)*ct_err + sqrt(2*sqrt(q11)+q22_gain)*vd);
+    float temp=GetEuclideanDistance(this->rabbit,GetWayPoint(currentWayPointID_rab));
+    float temp1=GetEuclideanDistance(GetWayPoint(currentWayPointID_rab -1),GetWayPoint(currentWayPointID_rab));
 //    if (u>0.07) u=0.07;
 //    if (u< -0.07) u=-0.07;
-    float psi_new=0.1*(u/vel);
+     if (DistFmWp<=6&&(temp1-temp<6))
+ {// ct_err=-ct_err;
+    //{
+     psi_new=ang_wrap(desiredHeading-currentHeading);
+    }
+
+   else  psi_new=0.1*(u/vel);
 
     /** bring down required turn angle in the range -maximumAllowedTurn to maximumAllowedTurn **/
     if(psi_new >  MaximumAllowedTurnValue)
@@ -279,8 +315,8 @@ void Rabbit::UpdateThrottle()
         float velocitySquare = this->currentVelocity * this->currentVelocity;
         float requiredAcceleration = -1 * velocitySquare / (2 * 8);
         tempThrottle = requiredAcceleration;
-        tempThrottle /= 2;
-        if(this->currentVelocity  < 0.05)
+        tempThrottle *=(0.75);
+        if(this->currentVelocity  < 0.25)
                 tempThrottle = 0.035;
     }
     else
@@ -288,8 +324,9 @@ void Rabbit::UpdateThrottle()
         ROS_INFO("Normal");
         //accelerate
         tempThrottle = (((0.1 * this->carrotPosition.carrotDistance) - (this->currentVelocity * deltaTime))*2) / (deltaTime * deltaTime); // s = ut + 1/2 at^2
+        if(tempThrottle < 0) tempThrottle = 0;
     }
-    ROS_INFO("Throttle %f - %f",this->throttle, tempThrottle);
+    //ROS_INFO("Throttle %f - %f",this->throttle, tempThrottle);
     if(tempThrottle > 0.07) tempThrottle = 0.07;
     if(tempThrottle < -0.07) tempThrottle = -0.07;
 
@@ -298,7 +335,7 @@ void Rabbit::UpdateThrottle()
     if(currentVelocity > MaximumAllowedVelocity) tempThrottle = 0;
 
     this->throttle = tempThrottle;
-    ROS_INFO("Throttle %f - %f",this->throttle, tempThrottle);
+   // ROS_INFO("Throttle %f - %f",this->throttle, tempThrottle);
 }
 
 void Rabbit::CalculateVelocity(Position position)
