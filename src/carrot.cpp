@@ -163,7 +163,7 @@ void Carrot::UpdateCarrotWhenReachedWaypoint()
         if(GetCurrentWayPointID() >= wayPointPath.size())
         {
             this->carrotState = ReachedEndDestination;
-            SetCarrotRabbitPosition(carrotDistance, carrotDirection, rabbitToCurrentWaypointDistance, rabbit_follow::carrotPosition::NearWayPoint);
+            SetCarrotRabbitPosition(carrotDistance, carrotDirection, rabbitToCurrentWaypointDistance, rabbit_follow::carrotPosition::ReachedEnd);
             PublishCarrotPosition();
             ros::Duration(1).sleep();
             exit(1);
