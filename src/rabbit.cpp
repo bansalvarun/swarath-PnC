@@ -216,7 +216,7 @@ void Rabbit::UpdateThrottle()
 
 
     //if (this->carrotPosition.rabbitState == rabbit_follow::carrotPosition::NearWayPoint)
-    if (this->carrotPosition.rabbitDistanceToWaypoint < (6))
+    if (this->carrotPosition.rabbitDistanceToWaypoint < (8))
     {
         //breaking
         //float currentTimeToCarrot = this->carrotPosition.carrotDistance / this->currentVelocity;
@@ -225,8 +225,8 @@ void Rabbit::UpdateThrottle()
         float requiredAcceleration = -1 * velocitySquare / (2 * 6);
         tempThrottle = requiredAcceleration;
         tempThrottle *= (0.75);
-        if(this->currentVelocity  < 0.25)
-                tempThrottle = 0.07;
+        if(this->currentVelocity  < 0.35)
+                tempThrottle = 0.06;
     }
     else
     {

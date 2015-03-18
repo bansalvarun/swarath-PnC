@@ -143,6 +143,9 @@ void Carrot::UpdateCarrotWhenReachedWaypoint()
     float carrotDirection = GetAngle(this->carrot,this->rabbit);
     SetCarrotRabbitPosition(carrotDistance, carrotDirection, carrotDistance, rabbit_follow::carrotPosition::NearWayPoint);
 
+    float rabbitToCurrentWaypointDistance  = GetEuclideanDistance(this->rabbit, GetWayPoint(currentWayPointID-1));
+
+
     float waypointdistance = GetEuclideanDistance(this->rabbit,GetWayPoint(currentWayPointID-1));
     /** if carrot distance from rabbit is less than the specified minimum distance
             then change carrot state to moving on line
@@ -160,7 +163,7 @@ void Carrot::UpdateCarrotWhenReachedWaypoint()
         if(GetCurrentWayPointID() >= wayPointPath.size())
         {
             this->carrotState = ReachedEndDestination;
-            SetCarrotRabbitPosition(carrotDistance, carrotDirection, carrotDistance, rabbit_follow::carrotPosition::NearWayPoint);
+            SetCarrotRabbitPosition(carrotDistance, carrotDirection, rabbitToCurrentWaypointDistance, rabbit_follow::carrotPosition::NearWayPoint);
             PublishCarrotPosition();
             ros::Duration(1).sleep();
             exit(1);
@@ -184,7 +187,7 @@ void Carrot::UpdateCarrotWhenReachedWaypoint()
 //
 //        float carrotDistance = GetEuclideanDistance(this->carrot,this->rabbit);
 //        float carrotDirection = GetAngle(this->carrot,this->rabbit);
-        SetCarrotRabbitPosition(carrotDistance, carrotDirection, carrotDistance, rabbit_follow::carrotPosition::NearWayPoint);
+        SetCarrotRabbitPosition(carrotDistance, carrotDirection, rabbitToCurrentWaypointDistance, rabbit_follow::carrotPosition::NearWayPoint);
 
 #ifdef debugCarrot
         ROS_INFO("Carrot Distance = %f, Carrot Direction = %f", carrotDistance, carrotDirection);
@@ -227,11 +230,11 @@ void Carrot::UpdateCarrotWhenMovingOnLine()
     /** check if carrot is still on the line segment or not **/
     float carrotToLastWaypointDistance, intersectionToLastWaypointDistance;
     carrotToLastWaypointDistance  = GetEuclideanDistance(carrotNewPosition, GetWayPoint(currentWayPointID-1));
-    float carrotToCurrentWaypointDistance  = GetEuclideanDistance(carrotNewPosition, GetWayPoint(currentWayPointID));
+    float rabbitToCurrentWaypointDistance  = GetEuclideanDistance(this->rabbit, GetWayPoint(currentWayPointID));
     intersectionToLastWaypointDistance = GetEuclideanDistance(GetWayPoint(currentWayPointID-1), GetWayPoint(currentWayPointID));
 
 #ifdef debugCarrot
-    ROS_INFO("carrot ot wapnt = %f",carrotToCurrentWaypointDistance);
+ //   ROS_INFO("carrot ot wapnt = %f",carrotToCurrentWaypointDistance);
 #endif // debugCarrot
 
     /** if carrot is crossing the line segment
@@ -239,8 +242,8 @@ void Carrot::UpdateCarrotWhenMovingOnLine()
         else
             carrot location is the new carrot location
     **/
-    if (carrotToLastWaypointDistance > intersectionToLastWaypointDistance )//&&
-    //if(carrotToCurrentWaypointDistance < 4)
+    //if (carrotToLastWaypointDistance > intersectionToLastWaypointDistance )//&&
+    if(rabbitToCurrentWaypointDistance < 6)
     {
         this->carrot = GetWayPoint(currentWayPointID);
         this->carrotState = ReachedWaypoint;
