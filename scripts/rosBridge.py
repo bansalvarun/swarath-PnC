@@ -35,10 +35,10 @@ def parseData(data):
     imu = imu.split('q')
 
     lidar = lidar.split(';')
-    lidar = [ x.split('q') for x in lidar ] 
+    lidar = [ x.split('q') for x in lidar ]
     arr=lidar_data()    # You can take LIDAR Data and change it to any format you want
 
-    
+
 
 
     for data1 in gps:
@@ -58,15 +58,15 @@ def parseData(data):
     minAngle2 = -60
     angle1LC = 2
     angle2LC = 2
-    arr.inc=angle1LC
-    arr.rang=maxAngle1
-    
+    arr.increment=angle1LC
+    arr.range=maxAngle1
+
 
     noOfVerticle = int((maxAngle2 - minAngle2)/angle2LC)
     noOfHorizontal = int((maxAngle1 - minAngle1)/angle1LC)
-    arr.ver_readings=noOfVerticle
-    arr.hor_readings=noOfHorizontal
-    
+    arr.vertical_readings=noOfVerticle
+    arr.horizontal_readings=noOfHorizontal
+
 
     lidarArr = []
 
@@ -92,7 +92,7 @@ def parseData(data):
         except :
             pass
 
-       
+
 
 
 

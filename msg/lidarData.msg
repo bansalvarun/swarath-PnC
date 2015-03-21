@@ -1,5 +1,5 @@
-float32[] array
+float32[] sensorData
 int32 increment
 int32 range
-int32 vertical_readings
-int32 horizontal_readings
+int32 verticalReadings
+int32 horizontalReadings
