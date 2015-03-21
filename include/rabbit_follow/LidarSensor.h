@@ -4,6 +4,9 @@
 #include <ros/ros.h>
 #include <rabbit_follow/lidarData.h>
 #include <rabbit_follow/GlobalDeclaration.h>
+#include <vector>
+
+using namespace std;
 
 class LidarSensor
 {
@@ -18,7 +21,7 @@ class LidarSensor
 
         static void initializeLidarSensorData(int increment, int range);
         static void callbackUpdateLidarData(const rabbit_follow::lidarData::ConstPtr& lidarSensor);
-        static void isObstacleInFront();
+        //static void isObstacleInFront(vector<int> );
 
         /** Default destructor */
         virtual ~LidarSensor();

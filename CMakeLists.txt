@@ -108,7 +108,8 @@ include_directories(include
    src/rabbit.cpp
    src/rrt.cpp
    src/obstacles.cpp
-   src/dijkstra.cpp
+   src/bug.cpp
+   src/bug_location.cpp
    src/carrot.cpp
    src/GlobalDeclaration.cpp
    src/LidarSensor.cpp

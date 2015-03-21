@@ -2,7 +2,7 @@
 #include <visualization_msgs/Marker.h>
 #include <geometry_msgs/Point.h>
 #include <rabbit_follow/rrt.h>
-#include <path_planning/obstacles.h>
+#include <rabbit_follow/obstacles.h>
 #include <iostream>
 #include <cmath>
 #include <math.h>

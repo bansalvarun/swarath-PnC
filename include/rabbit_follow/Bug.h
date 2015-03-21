@@ -3,7 +3,7 @@
 
 #include <ros/ros.h>
 #include <geometry_msgs/Point.h>
-#include <path_planning/obstacles.h>
+#include <rabbit_follow/obstacles.h>
 #include <vector>
 
 enum State {movingToGoal, boundaryFollowing, reachedEnd};

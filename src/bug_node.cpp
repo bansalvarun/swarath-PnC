@@ -1,8 +1,7 @@
 #include <ros/ros.h>
 #include <visualization_msgs/Marker.h>
-#include <path_planning/obstacles.h>
-#include <path_planning/Bug.h>
-#include <path_planning/Vec2.h>
+#include <rabbit_follow/obstacles.h>
+#include <rabbit_follow/Bug.h>
 #include <geometry_msgs/Point.h>
 #include <iostream>
 #include <vector>
