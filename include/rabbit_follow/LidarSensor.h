@@ -4,6 +4,7 @@
 #include <ros/ros.h>
 #include <rabbit_follow/lidarData.h>
 #include <rabbit_follow/GlobalDeclaration.h>
+#include <visualization_msgs/Marker.h>
 #include <vector>
 
 using namespace std;
@@ -18,7 +19,11 @@ class LidarSensor
         static float sensorData[lidarReadingsRange][lidarReadingsRange];
         static bool sensorDataUpdated;
 
+        static visualization_msgs::Marker rvizData;
+        static ros::Publisher toRviz;
 
+        static void initializeRvizMarker();
+        static void publishDataToRviz();
         static void initializeLidarSensorData(int increment, int range);
         static void callbackUpdateLidarData(const rabbit_follow::lidarData::ConstPtr& lidarSensor);
         //static void isObstacleInFront(vector<int> );
