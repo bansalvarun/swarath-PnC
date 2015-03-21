@@ -37,3 +37,9 @@ void LidarSensor::callbackUpdateLidarData(const rabbit_follow::lidarData::ConstP
     LidarSensor::sensorDataUpdated = true;
     //ROS_INFO("Lidar Sensor Updated");
 }
+
+bool LidarSensor::isObstacleInFront(vector<> )
+{
+
+
+}

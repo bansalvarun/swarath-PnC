@@ -18,6 +18,7 @@ class LidarSensor
 
         static void initializeLidarSensorData(int increment, int range);
         static void callbackUpdateLidarData(const rabbit_follow::lidarData::ConstPtr& lidarSensor);
+        static void isObstacleInFront();
 
         /** Default destructor */
         virtual ~LidarSensor();
