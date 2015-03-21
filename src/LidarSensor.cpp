@@ -1,16 +1,6 @@
 #include "rabbit_follow/LidarSensor.h"
 
 
-int LidarSensor::verticalReadings;
-int LidarSensor::horizontalReadings;
-int LidarSensor::range;
-int LidarSensor::increment;
-float LidarSensor::sensorData[lidarReadingsRange][lidarReadingsRange];
-bool LidarSensor::sensorDataUpdated;
-visualization_msgs::Marker LidarSensor::rvizData;
-ros::Publisher LidarSensor::toRviz;
-
-
 LidarSensor::LidarSensor()
 {
     //ctor
@@ -48,7 +38,7 @@ void LidarSensor::callbackUpdateLidarData(const rabbit_follow::lidarData::ConstP
 //
 //}
 
-void LidarSensor::publishDataToRviz()
+void LidarSensor::setRvizMarkerData(Position rabbit, float addedHeading)
 {
     rvizData.points.clear();
     geometry_msgs::Point point;
@@ -58,21 +48,30 @@ void LidarSensor::publishDataToRviz()
         angleY = -1 * M_PI/3;
         for(int j=0;j < lidarReadingsRange;j++)
         {
-            point.z = (LidarSensor::sensorData[i][j] * cos (angleZ) * sin (angleY));
-            point.y = (LidarSensor::sensorData[i][j] * sin (angleZ));
-            point.x = (LidarSensor::sensorData[i][j] * cos (angleZ) * cos (angleY));
+            point.z = rabbit.y + (LidarSensor::sensorData[i][j] * cos (angleZ + addedHeading) * sin (angleY));
+            point.y = rabbit.z + (LidarSensor::sensorData[i][j] * sin (angleZ + addedHeading));
+            point.x = rabbit.x + (LidarSensor::sensorData[i][j] * cos (angleZ + addedHeading) * cos (angleY));
+
+            //if(point.z < -0.5 || point.z > 1) continue;
+            //if(sqrt((point.x*point.x)+(point.y*point.y)+(point.z*point.z))>10) continue;
+
             rvizData.points.push_back(point);
             angleY += 0.034906585;
         }
         angleZ += 0.034906585;
     }
+    publishDataToRviz();
+}
+
+void LidarSensor::publishDataToRviz()
+{
     LidarSensor::toRviz.publish(rvizData);
 }
 
 void LidarSensor::initializeRvizMarker()
 {
  //init headers
-	rvizData.header.frame_id    = "lidar_sensor";
+	rvizData.header.frame_id    = "rabbit_follow";
 	rvizData.header.stamp       = ros::Time::now();
 	rvizData.ns                 = "lidar_sensor_rabbit";
 	rvizData.action             = visualization_msgs::Marker::ADD;

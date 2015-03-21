@@ -225,11 +225,13 @@ void Rabbit::UpdateThrottle()
         //float currentTimeToCarrot = this->carrotPosition.carrotDistance / this->currentVelocity;
         ROS_INFO("Breaking");
         float velocitySquare = this->currentVelocity * this->currentVelocity;
-        float requiredAcceleration = -1 * velocitySquare / (2 * 6);
+        float requiredAcceleration = -0.8 * velocitySquare / (2 * 6);
         tempThrottle = requiredAcceleration;
         tempThrottle *= (0.75);
-        if(this->currentVelocity  < 0.35)
-                tempThrottle = 0.06;
+        if(this->currentVelocity < 1)
+                tempThrottle = (1 - this->currentVelocity) * 0.07;
+//        if(this->currentVelocity  < 0.35)
+//                tempThrottle = 0.06;
     }
     else
     {

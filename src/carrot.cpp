@@ -49,9 +49,10 @@ void Carrot::InitializeMarker()
 	carrotMarker.scale.x = 1;
     carrotMarker.scale.y = 1;
     carrotMarker.scale.z = 1;
-    wayPointMarker.scale.x = 0.21;
+
+    wayPointMarker.scale.x = 0.3;
     //assigning colors
-	carrotMarker.color.r   = 1.0f;
+	carrotMarker.color.b   = 1.0f;
 	carrotMarker.color.a   = 1.0f;
 
     wayPointMarker.color.r = 0;
@@ -293,7 +294,7 @@ void Carrot::MoveCarrot(const ros::TimerEvent& event)
 #endif // debugCarrot
 
     PublishCarrotPosition();
-
+    lidarSensor.setRvizMarkerData(this->rabbit, this->rabbitCurrentHeading);
 //#ifdef debugCarrot
 //    ROS_INFO("Exiting Move Carrot Function");
 //#endif // debugCarrot
@@ -386,4 +387,18 @@ void Carrot::GetPerpendicularLineIntersection(Position linePointOne, Position li
     double lambda = (dx * (robotLocation.x - linePointOne.x)) + (dz * (robotLocation.z - linePointOne.z));
     intersectionPoint.x = (dx * lambda) + linePointOne.x;
     intersectionPoint.z = (dz * lambda) + linePointOne.z;
+}
+
+void Carrot::CallbackUpdateRabbitIMULocation(const std_msgs::String::ConstPtr& rabbit)
+{
+    vector<string> temp = split(rabbit->data,',');
+    this->rabbitCurrentHeading = atof(temp[1].c_str());
+    /** convert current heading from degrees to radians **/
+    this->rabbitCurrentHeading = ToRadians(this->rabbitCurrentHeading);
+
+    /** if current heading is greater than PI then subtract 2 PI to make come in the range -pi to 0**/
+    if(this->rabbitCurrentHeading>M_PI)
+        this->rabbitCurrentHeading -= (M_PI * 2);
+
+    this->rabbitCurrentHeading *= -1;
 }

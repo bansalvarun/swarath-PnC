@@ -13,6 +13,7 @@
 #include <std_msgs/String.h>
 #include <visualization_msgs/Marker.h>
 #include <rabbit_follow/GlobalDeclaration.h>
+#include <rabbit_follow/LidarSensor.h>
 #include <rabbit_follow/carrotPosition.h>
 #include <vector>
 
@@ -39,6 +40,7 @@ class Carrot
 
         /** ros callback function for updating rabbit location**/
         void CallbackUpdateRabbitLocation(const std_msgs::String::ConstPtr& rabbitLocation);
+        void CallbackUpdateRabbitIMULocation(const std_msgs::String::ConstPtr& rabbit);
 
         /** "publisher_carrot_robot" -> left public for ROS instantiation **/
         ros::Publisher publisher_carrot_robot;
@@ -48,6 +50,8 @@ class Carrot
         /** initialize carrot rviz marker**/
         void InitializeMarker();
 
+        /** **/
+        LidarSensor lidarSensor;
 
     protected:
     private:
@@ -63,6 +67,8 @@ class Carrot
         /** member for storing the rabbit's current location **/
         Position rabbit;
 
+        float rabbitCurrentHeading;
+
         /** member for storing the carrot's distance and direction from the rabbit **/
         rabbit_follow::carrotPosition carrotPosition;
 
@@ -71,6 +77,8 @@ class Carrot
 
         /** member for storing the current waypoint that's is being followed **/
         int currentWayPointID;
+
+
 
         /** get functions **/
 

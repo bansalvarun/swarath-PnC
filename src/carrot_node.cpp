@@ -9,6 +9,7 @@
 #include <ros/ros.h>
 #include <rabbit_follow/carrotPosition.h>
 #include <rabbit_follow/carrot.h>
+#include <visualization_msgs/Marker.h>
 #include <cmath>
 #include <vector>
 #include <string>
@@ -39,8 +40,15 @@ int main (int passedArgumentCount,char** passedArgumentValues)
     carrot.publisher_carrot_robot = nodeHandle.advertise<rabbit_follow::carrotPosition>("carrot_location_update",10);
     carrot.publisher_carrot_location_rviz = nodeHandle.advertise<visualization_msgs::Marker>("carrot_location_rviz_update",10);
 
+    carrot.lidarSensor.toRviz = nodeHandle.advertise<visualization_msgs::Marker>("lidar_sensor_data",10);
+
+
     //initializing subscriber for updating rabbit location
     ros::Subscriber subscriber = nodeHandle.subscribe("gps_unity", 1000, &Carrot::CallbackUpdateRabbitLocation, &carrot);
+
+    //initializing subscriber for updating rabbit heading
+    ros::Subscriber lidarSensorSubscriber = nodeHandle.subscribe("lidar_unity", 1000, &LidarSensor::callbackUpdateLidarData, &carrot.lidarSensor);
+    ros::Subscriber rabbitHeadingSubscriber = nodeHandle.subscribe("imu_unity", 1000, &Carrot::CallbackUpdateRabbitIMULocation, &carrot);
 
 	//sleep to let code register punlisher and subscribers
 	ros::Duration(1).sleep();
@@ -49,6 +57,7 @@ int main (int passedArgumentCount,char** passedArgumentValues)
     ros::Timer timer = nodeHandle.createTimer(ros::Duration(0.1),&Carrot::MoveCarrot, &carrot);
 
     carrot.InitializeMarker();
+    carrot.lidarSensor.initializeRvizMarker();
 
     //starting spin to start processing incoming messages
     ros::spin();

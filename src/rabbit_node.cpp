@@ -28,8 +28,6 @@ int main (int argc,char** argv)
     rabbit.steer_publisher = n.advertise<std_msgs::String>("steering_unity",10);
     rabbit.publisher_rabbit_location_rviz = n.advertise<visualization_msgs::Marker>("rabbit_location_rviz_update",10);
 
-    LidarSensor::toRviz = n.advertise<visualization_msgs::Marker>("lidar_sensor_data",10);
-
     //initializing publisher of carrot to rabbit distance and direction
     rabbit.throttle_publisher = n.advertise<std_msgs::String>("throttle_unity",10);
 
@@ -42,14 +40,11 @@ int main (int argc,char** argv)
     //initializing subscriber for updating rabbit heading
     ros::Subscriber rabbitheadingSubscriber = n.subscribe("imu_unity", 1000, &Rabbit::CallbackUpdateRabbitIMULocation, &rabbit);
 
-    //initializing subscriber for updating rabbit heading
-    ros::Subscriber lidarSensorSubscriber = n.subscribe("lidar_unity", 1000, &LidarSensor::callbackUpdateLidarData);
-
     //sleep to let code register punlisher and subscribers
 	ros::Duration(1).sleep();
     rabbit.InitializeMarker();
 
-    LidarSensor::initializeRvizMarker();
+
 
     //creating rostimer to call Move Rabbit every 100 millisecond
     ros::Timer timer = n.createTimer(ros::Duration(0.1), &Rabbit::MoveRabbit, &rabbit);     //changing from 15hz to 10hz
