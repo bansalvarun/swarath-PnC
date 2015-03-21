@@ -111,6 +111,7 @@ include_directories(include
    src/dijkstra.cpp
    src/carrot.cpp
    src/GlobalDeclaration.cpp
+   src/LidarSensor.cpp
 )
 
 ## Declare a cpp executable

@@ -3,10 +3,10 @@ import rospy
 import roslib
 from std_msgs.msg import *
 import numpy as np
-from swarath.msg import *
+from rabbit_follow.msg import *
 pub_gps = rospy.Publisher('gps_unity', String, queue_size=10)
 pub_imu = rospy.Publisher('imu_unity', String, queue_size=10)
-pub_lidar=rospy.Publisher('lidar_unity',lidar_data,queue_size=10)
+pub_lidar=rospy.Publisher('lidar_unity',lidarData,queue_size=10)
 
 
 rospy.init_node('swarath', anonymous=True)
@@ -36,7 +36,7 @@ def parseData(data):
 
     lidar = lidar.split(';')
     lidar = [ x.split('q') for x in lidar ]
-    arr=lidar_data()    # You can take LIDAR Data and change it to any format you want
+    arr=lidarData()    # You can take LIDAR Data and change it to any format you want
 
 
 
@@ -64,8 +64,8 @@ def parseData(data):
 
     noOfVerticle = int((maxAngle2 - minAngle2)/angle2LC)
     noOfHorizontal = int((maxAngle1 - minAngle1)/angle1LC)
-    arr.vertical_readings=noOfVerticle
-    arr.horizontal_readings=noOfHorizontal
+    arr.verticalReadings=noOfVerticle
+    arr.horizontalReadings=noOfHorizontal
 
 
     lidarArr = []
@@ -99,7 +99,7 @@ def parseData(data):
     #print(lidarArr)
     temp=noOfVerticle*noOfHorizontal
     lidarArr1=np.reshape(lidarArr,temp)
-    arr.array=lidarArr1
+    arr.sensorData=lidarArr1
    # print(lidarArr1)
 
     gpsData = gpsData[:-1]

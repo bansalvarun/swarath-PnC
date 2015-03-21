@@ -11,6 +11,7 @@
 #include <rabbit_follow/carrotPosition.h>
 #include <visualization_msgs/Marker.h>
 #include <std_msgs/String.h>
+#include <rabbit_follow/LidarSensor.h>
 
 int main (int argc,char** argv)
 {
@@ -37,6 +38,9 @@ int main (int argc,char** argv)
 
     //initializing subscriber for updating rabbit heading
     ros::Subscriber rabbitheadingSubscriber = n.subscribe("imu_unity", 1000, &Rabbit::CallbackUpdateRabbitIMULocation, &rabbit);
+
+    //initializing subscriber for updating rabbit heading
+    ros::Subscriber lidarSensorSubscriber = n.subscribe("lidar_unity", 1000, &LidarSensor::callbackUpdateLidarData);
 
     //sleep to let code register punlisher and subscribers
 	ros::Duration(1).sleep();

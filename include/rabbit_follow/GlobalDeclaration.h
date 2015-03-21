@@ -31,6 +31,6 @@ const float MaximumAllowedTurnValue = ToRadians(30); // value 30 is allowed max 
 const float RabbitMaxAcceleration = 0.07; //units per sec^2
 const int MinAllowedDistanceCarrotToRabbit = 3;
 
-
+const int lidarReadingsRange = 60;
 
 #endif // GLOBALDECLARATION_H
