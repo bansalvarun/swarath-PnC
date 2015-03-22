@@ -134,11 +134,27 @@ void Carrot::SetCarrotRabbitPosition(float distance, float direction, float rabb
 void Carrot::UpdateCarrotWhenReachedWaypoint()
 {
 
+    /** get robot projection on the current line that is being followed **/
+    Position robotLineIntersectionPoint;
+    GetPerpendicularLineIntersection(GetWayPoint(currentWayPointID-1), GetWayPoint(currentWayPointID), this->rabbit, robotLineIntersectionPoint);
+
     float carrotHeadingAngle = GetAngle(GetWayPoint(currentWayPointID), GetWayPoint(currentWayPointID-1));
     Position carrotNewPosition;
-    carrotNewPosition.x = GetWayPoint(currentWayPointID-1).x + ((MaximumDistanceOnTurn) * cos(carrotHeadingAngle));
-    carrotNewPosition.z = GetWayPoint(currentWayPointID-1).z + ((MaximumDistanceOnTurn) * sin(carrotHeadingAngle));
-    this->carrot = carrotNewPosition;
+
+    int carrotToRabbitDistance = GetEuclideanDistance(this->rabbit, GetWayPoint(currentWayPointID-1));
+
+    int isdistancePositve = MaximumDistanceOnTurn - carrotToRabbitDistance;
+
+//    if(isdistancePositve > 0)
+//    {
+        carrotNewPosition.x = GetWayPoint(currentWayPointID-1).x + ((MaximumDistanceOnTurn) * cos(carrotHeadingAngle));
+        carrotNewPosition.z = GetWayPoint(currentWayPointID-1).z + ((MaximumDistanceOnTurn) * sin(carrotHeadingAngle));
+        this->carrot = carrotNewPosition;
+//    }
+//    else
+//    {
+//        carrot = GetWayPoint(currentWayPointID -1);
+//    }
 
     float carrotDistance = GetEuclideanDistance(this->carrot,this->rabbit);
     float carrotDirection = GetAngle(this->carrot,this->rabbit);
@@ -147,12 +163,26 @@ void Carrot::UpdateCarrotWhenReachedWaypoint()
     float rabbitToCurrentWaypointDistance  = GetEuclideanDistance(this->rabbit, GetWayPoint(currentWayPointID-1));
 
 
-    float waypointdistance = GetEuclideanDistance(this->rabbit,GetWayPoint(currentWayPointID-1));
+    float waypointdistance = GetEuclideanDistance(this->rabbit,GetWayPoint(currentWayPointID));
     /** if carrot distance from rabbit is less than the specified minimum distance
             then change carrot state to moving on line
         else
             update current distance and direction of rabbit from carrot
     **/
+    if(waypointdistance < 4)
+    {
+        this->carrot = GetWayPoint(currentWayPointID);
+        this->carrotState = ReachedWaypoint;
+        IncrementCurrentWayPointID();
+        if(GetCurrentWayPointID() >= wayPointPath.size())
+        {
+            this->carrotState = ReachedEndDestination;
+            SetCarrotRabbitPosition(carrotDistance, carrotDirection, rabbitToCurrentWaypointDistance, rabbit_follow::carrotPosition::ReachedEnd);
+            PublishCarrotPosition();
+            ros::Duration(1).sleep();
+            exit(1);
+        }
+    }
     if(carrotDistance < MinAllowedDistanceCarrotToRabbit)
     {
 
