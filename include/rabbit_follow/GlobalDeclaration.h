@@ -29,7 +29,7 @@ const float MaximumAllowedVelocity = 5.5;
 const float NanoSecondsInOneSecond = 1000000000;
 const float MaximumAllowedTurnValue = ToRadians(30); // value 30 is allowed max turn in unity
 const float RabbitMaxAcceleration = 0.07; //units per sec^2
-const int MinAllowedDistanceCarrotToRabbit = 3;
+const int MinAllowedDistanceCarrotToRabbit = 4;
 
 const int lidarReadingsRange = 60;
 

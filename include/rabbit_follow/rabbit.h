@@ -20,7 +20,7 @@
 
 using namespace std;
 
-enum RabbitState{FollowingCarrot, ReachedEnd, avoidingObstacle};
+enum RabbitState{FollowingCarrot, Turning, ReachedEnd, AvoidingObstacle};
 
 class Rabbit
 {
