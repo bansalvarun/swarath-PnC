@@ -120,9 +120,11 @@ void Rabbit::CallbackUpdateCarrotLocation(const rabbit_follow::carrotPosition::C
 {
     if(carrot->rabbitState == rabbit_follow::carrotPosition::ReachedEnd)
 {
-        this->throttle = -1;
+        this->throttle = -0.8;
         PublishThrottle();
-        ros::Duration(0.5).sleep();
+        this->steering = 0;
+        PublishSteering();
+        ros::Duration(0.3).sleep();
         this->throttle = 0;
         PublishThrottle();
         ros::Duration(1).sleep();

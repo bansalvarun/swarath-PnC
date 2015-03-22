@@ -169,7 +169,10 @@ void Carrot::UpdateCarrotWhenReachedWaypoint()
         else
             update current distance and direction of rabbit from carrot
     **/
-    if(waypointdistance < 4)
+    float carrotToLastWaypointDistance, intersectionToLastWaypointDistance;
+    carrotToLastWaypointDistance  = GetEuclideanDistance(carrotNewPosition, GetWayPoint(currentWayPointID-1));
+    intersectionToLastWaypointDistance = GetEuclideanDistance(GetWayPoint(currentWayPointID-1), GetWayPoint(currentWayPointID));
+    if(waypointdistance < 4 || carrotToLastWaypointDistance > intersectionToLastWaypointDistance)
     {
         this->carrot = GetWayPoint(currentWayPointID);
         this->carrotState = ReachedWaypoint;
@@ -379,6 +382,7 @@ void Carrot::ReadWayPointsFromFile(char* filename)
     string line;
     wayPointMarker.points.clear();
     ifstream myfile (filename);
+    int i=0;
     if (myfile.is_open())
     {
         while ( getline (myfile,line) )
@@ -388,8 +392,11 @@ void Carrot::ReadWayPointsFromFile(char* filename)
             position.y = atof(temp[1].c_str());
             posi.y = position.z = atof(temp[2].c_str());
             posi.z =00;
-            wayPointMarker.points.push_back(posi);
+
+//            if(i<2 || i>3)
+//                wayPointMarker.points.push_back(posi);
             this->wayPointPath.push_back(position);
+            i++;
         }
         myfile.close();
     }
